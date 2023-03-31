@@ -55,7 +55,7 @@ public class TestGame implements Scene {
         quad = new Quad();
         cube = new Cube();
 
-        // CREATE THE THREE SHADERS
+        // CREATE THE TWO SHADERS
         defaultShader = new ShaderProgram(FileUtil.loadResource("shaders/vertex.glsl"), FileUtil.loadResource("shaders/fragment.glsl"));
         ShaderProgram skyBoxShader = new ShaderProgram(FileUtil.loadResource("shaders/skybox/skyboxvertex.glsl"), FileUtil.loadResource("shaders/skybox/skyboxfragment.glsl"));
 

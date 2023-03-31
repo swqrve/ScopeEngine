@@ -152,13 +152,13 @@ public class SkyBox extends Model {
             IntBuffer nrChannels = MemoryUtil.memAllocInt(1);
 
             String fileLocation = directory + "/" + faces[i] + ".png";
-            STBImage.stbi_set_flip_vertically_on_load(false); // TODO: Add this to the constructor if necessary
+            STBImage.stbi_set_flip_vertically_on_load(false);
 
             ByteBuffer data = null;
             if (Texture.class.getClassLoader().getResource(fileLocation) != null) data = stbi_load(Texture.class.getClassLoader().getResource(fileLocation).getPath().substring(1), width, height, nrChannels, 0);
 
             if (data == null) {
-                Debug.log(Debug.LogLevel.FATAL, "Failed to load texture " + fileLocation + ". There is no fall back skybox! Crashing!", true); // TODO: Return a misc texture in the case of failure to find texture
+                Debug.log(Debug.LogLevel.FATAL, "Failed to load texture " + fileLocation + ". There is no fall back skybox! Crashing!", true);
                 ScopeEngine.getInstance().end();
                 return;
             }

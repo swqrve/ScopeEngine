@@ -36,8 +36,8 @@ public class LightManager {
         this.maxPointLights = (int) ConstManager.getConstant("maxPointLights"); // TODO: These don't actually affect the max point or spot lights inside of the shader, they're defaulted to max 5
         this.maxSpotLights = (int) ConstManager.getConstant("maxSpotLights");
 
-        pointLights = new PointLight[5];
-        spotLights = new SpotLight[5];
+        pointLights = new PointLight[maxPointLights];
+        spotLights = new SpotLight[maxSpotLights];
     }
 
     public LightManager(ShaderProgram shader) {

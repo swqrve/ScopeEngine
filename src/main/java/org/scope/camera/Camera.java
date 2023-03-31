@@ -25,14 +25,10 @@ public abstract class Camera {
     @Getter @Setter private float yaw = -90.0f;
     @Getter @Setter private float pitch = 0.0f;
 
-    @Getter @Setter private float sensitivity = 0.25f; // TODO: Not sure how I feel about this being here but eh
-
-
     public Camera(Vector3f cameraPosition, float fov) {
         this.cameraPosition = cameraPosition;
         this.fov = fov;
         cameraProjection = new Matrix4f().identity().perspective(Math.toRadians(fov), (float) ScopeEngine.getInstance().getEngineManager().getWindowManager().getWidth() / (float) ScopeEngine.getInstance().getEngineManager().getWindowManager().getHeight(), (Float) ConstManager.getConstant("zNear"), (Float) ConstManager.getConstant("zFar"));
-        // TODO: edit the setFOV function and resize to update the cameraProjection
     }
 
     public Camera(float x, float y, float z, float fov) {
