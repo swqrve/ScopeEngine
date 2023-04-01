@@ -18,12 +18,32 @@ If you'd like to check out how to use it check out the game package. It is a bit
 ## Preview
 ![image](https://user-images.githubusercontent.com/59324927/229053567-c51ba313-8e9b-48d5-82eb-7fabb9ee83b3.png)
 
+*Particle System first version*
 
+![ezgif-4-2b48d856e8](https://user-images.githubusercontent.com/59324927/229319856-02551d80-30c5-4d8b-b095-713647bf30bd.gif)
+```
+        ParticleSetting setting = new ParticleSetting()
+                .setBasePosition(particleBasePosition.x, particleBasePosition.y, particleBasePosition.z)
+                .setBaseVelocity(0.25f, 1.0f, 0.25f)
+                .setStartingColor(47 / 255.0f, 130 / 255.0f, 186 / 255.0f, 1.0f)
+                .setFinalColor( 151 / 255.0f, 214 / 255.0f, 255 / 255.0f, 1.0f )
+                .setVelocityDisplacement(2.0f)
+                .setStartSize(1.0f)
+                .setEndSize(0.0f)
+                .setLifeTime(1.0f)
+                .setRotation(0.0f)
+                .setAffectedByLight(false)
+                .setEmitsLight(false)
+                .setShrinking(true)
+                .setMaterial(new Material(Material.StandardMaterial.EMERALD));
+
+        ParticleSystem system = new ParticleSystem(defaultShader, setting,202);
+```
 ## Future Features:
 All the following or almost all the following are expected in the next month in order to be ready for Ludum Dare in time. They will get checkmarks as they get completed.
 
 ```
--Particle System (Basic Version implemented)
+-Particle System (Basic Version implemented) ✔️
 -3D Audio
 -Raycasting
 -AABB Collision Detection
