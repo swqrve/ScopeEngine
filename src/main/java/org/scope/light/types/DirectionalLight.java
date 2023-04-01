@@ -26,12 +26,6 @@ public class DirectionalLight extends Light {
     }
 
     @Override
-    public void createUniforms(ShaderProgram shader, String uniformName) {
-        createDefaultUniforms(shader, uniformName);
-        shader.createUniform(uniformName + ".direction");
-    }
-
-    @Override
     public void setUniforms(ShaderProgram shader, String uniformName) {
         setDefaultUniforms(shader, uniformName);
         shader.setVec3(uniformName + ".direction", getDirection());

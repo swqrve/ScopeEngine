@@ -35,16 +35,6 @@ public class SpotLight extends Light {
     }
 
     @Override
-    public void createUniforms(ShaderProgram shader, String uniformName) {
-        createDefaultUniforms(shader, uniformName);
-        shader.createUniform(uniformName + ".att.constant");
-        shader.createUniform(uniformName + ".att.linear");
-        shader.createUniform(uniformName + ".att.exponent");
-        shader.createUniform(uniformName + ".coneDir");
-        shader.createUniform(uniformName + ".cutOff");
-    }
-
-    @Override
     public void setUniforms(ShaderProgram shader, String uniformName) {
         setDefaultUniforms(shader, uniformName);
         shader.setFloat(uniformName + ".att.constant", getConstant());

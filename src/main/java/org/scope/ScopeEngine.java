@@ -7,6 +7,8 @@ import org.scope.scene.Scene;
 import org.scope.util.ConstManager;
 import org.scope.util.EnginePreferences;
 
+import java.util.Random;
+
 public class ScopeEngine {
     @Getter private static ScopeEngine instance;
     @Getter private final EnginePreferences preferences;
@@ -14,6 +16,8 @@ public class ScopeEngine {
     @Getter private final EngineManager engineManager;
 
     @Getter private Scene currentScene;
+
+    @Getter private final Random random = new Random();
 
 
     public ScopeEngine(Scene entryScene, EnginePreferences preferences) {

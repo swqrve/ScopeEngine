@@ -28,14 +28,6 @@ public class PointLight extends Light {
     }
 
     @Override
-    public void createUniforms(ShaderProgram shader, String uniformName) {
-        createDefaultUniforms(shader, uniformName);
-        shader.createUniform(uniformName + ".att.constant");
-        shader.createUniform(uniformName + ".att.linear");
-        shader.createUniform(uniformName + ".att.exponent");
-    }
-
-    @Override
     public void setUniforms(ShaderProgram shader, String uniformName) {
         setDefaultUniforms(shader, uniformName);
         shader.setFloat(uniformName + ".att.constant", getConstant());

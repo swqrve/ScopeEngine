@@ -16,7 +16,6 @@ import static org.lwjgl.opengl.GL20.*;
 
 public class ShaderProgram {
 
-    private final Map<String, Integer> uniforms;
     public final int programID;
 
     private final int vertexShaderID;
@@ -29,9 +28,7 @@ public class ShaderProgram {
             Debug.log(Debug.LogLevel.FATAL, "Failed to create shader program! OpenGL capabilities may not have been initialized yet!", true);
             ScopeEngine.getInstance().end();
         }
-
-        uniforms = new HashMap<>();
-
+        
         vertexShaderID = createShader(vertexCode, GL_VERTEX_SHADER);
         fragmentShaderID = createShader(fragmentCode, GL_FRAGMENT_SHADER);
         
@@ -56,12 +53,62 @@ public class ShaderProgram {
         glAttachShader(programID, fragmentShaderID);
 
         glLinkProgram(programID);
+        if (glGetProgrami(programID, GL20.GL_LINK_STATUS) == GL_FALSE) Debug.log(Debug.LogLevel.FATAL, "Error linking Shader. Info: " + GL20.glGetProgramInfoLog(programID, 1024));
 
         glValidateProgram(programID);
-        if (glGetProgrami(programID, GL_VALIDATE_STATUS) == 0) Debug.log(Debug.LogLevel.FATAL,"Warning validating Shader code: " + glGetProgramInfoLog(programID, 1024));
+        if (glGetProgrami(programID, GL_VALIDATE_STATUS) == GL_FALSE) Debug.log(Debug.LogLevel.FATAL,"Error validating shader code: " + glGetProgramInfoLog(programID, 1024));
+
 
         glDeleteShader(vertexShaderID);
         glDeleteShader(fragmentShaderID);
+    }
+
+    public void setBool(String name, boolean value) {
+        bind();
+        glUniform1i(GL20.glGetUniformLocation(programID, name), (value) ? 1 : 0);
+    }
+
+    public void setInt(String name, int value) {
+        bind();
+        glUniform1i(GL20.glGetUniformLocation(programID, name), value);
+    }
+
+    public void setFloat(String name, float value) {
+        bind();
+        glUniform1f(GL20.glGetUniformLocation(programID, name), value);
+    }
+
+    public void setMatrix4f(String name, FloatBuffer buffer) {
+        bind();
+        glUniformMatrix4fv(GL20.glGetUniformLocation(programID, name), false, buffer);
+    }
+
+    public void setMatrix4f(String name, Matrix4f matrix) {
+        FloatBuffer buffer = BufferUtil.storeDataInFloatBuffer(matrix);
+
+        bind();
+        glUniformMatrix4fv(GL20.glGetUniformLocation(programID, name), false, buffer);
+
+        BufferUtil.freeMemory(buffer);
+    }
+
+    public void setVec3(String name, float v, float v1, float v2) {
+        bind();
+        glUniform3f(GL20.glGetUniformLocation(programID, name), v, v1, v2);
+    }
+
+    public void setVec3(String name, Vector3f v) {
+        bind();
+        glUniform3f(GL20.glGetUniformLocation(programID, name), v.x, v.y, v.z);
+    }
+
+    public void setVec4(String name, Vector4f v) {
+        bind();
+        glUniform4f(GL20.glGetUniformLocation(programID, name), v.x, v.y, v.z, v.w);
+    }
+    public void setVec4(String name, float v, float v1, float v2, float v3) {
+        bind();
+        glUniform4f(GL20.glGetUniformLocation(programID, name), v, v1, v2, v3);
     }
 
     public void bind() {
@@ -72,72 +119,8 @@ public class ShaderProgram {
         glUseProgram(0);
     }
 
-    public void createUniform(String uniformName) {
-        if (uniforms.containsKey(uniformName)) { // TODO: Could impact performance? How costly is a containsKey call?
-            Debug.log(Debug.LogLevel.WARN, "You're trying to create a uniform you've already created! Uniform Name: " + uniformName);
-            return;
-        }
-
-        int uniformLocation = GL20.glGetUniformLocation(programID, uniformName);
-        if (uniformLocation < 0) {
-            Debug.log(Debug.LogLevel.WARN, "Failed to create uniform in shader " + programID + " with uniform name " + uniformName, true);
-            return;
-        }
-
-        uniforms.put(uniformName, uniformLocation);
-    }
-
     public void cleanup() {
         unbind();
         if (programID != 0) glDeleteProgram(programID);
-    }
-
-
-    public void setBool(String name, boolean value) {
-        bind();
-        glUniform1i(uniforms.get(name), (value) ? 1 : 0);
-    }
-
-    public void setInt(String name, int value) {
-        bind();
-        glUniform1i(uniforms.get(name), value);
-    }
-
-    public void setFloat(String name, float value) {
-        bind();
-        glUniform1f(uniforms.get(name), value);
-    }
-
-    public void setMatrix4f(String name, FloatBuffer buffer) {
-        bind();
-        glUniformMatrix4fv(uniforms.get(name), false, buffer);
-    }
-
-    public void setMatrix4f(String name, Matrix4f matrix) {
-        FloatBuffer buffer = BufferUtil.storeDataInFloatBuffer(matrix);
-
-        bind();
-        glUniformMatrix4fv(uniforms.get(name), false, buffer);
-
-        BufferUtil.freeMemory(buffer);
-    }
-
-    public void setVec3(String name, float v, float v1, float v2) {
-        bind();
-        glUniform3f(uniforms.get(name), v, v1, v2);
-    }
-
-    public void setVec3(String name, Vector3f v) {
-        bind();
-        glUniform3f(uniforms.get(name), v.x, v.y, v.z);
-    }
-
-    public void setVec4(String name, Vector4f v) {
-        bind();
-        glUniform4f(uniforms.get(name), v.x, v.y, v.z, v.w);
-    }
-    public void setVec4(String name, float v, float v1, float v2, float v3) {
-        bind();
-        glUniform4f(uniforms.get(name), v, v1, v2, v3);
     }
 }

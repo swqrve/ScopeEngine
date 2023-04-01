@@ -15,11 +15,7 @@ public class ModelManager {
         modelName = modelName.toLowerCase();
         Model model = models.get(modelName);
 
-        if (model == null) {
-            Debug.log(Debug.LogLevel.FATAL, "Could not find the requested model of name: " +  modelName + "."); // TODO add default model in future?
-            ScopeEngine.getInstance().end();
-        }
-
+        if (model == null) Debug.log(Debug.LogLevel.ERROR, "Could not find the requested model of name: " +  modelName + ". Returning null.");
         return model;
     }
 

@@ -20,10 +20,10 @@ If you'd like to check out how to use it check out the game package. It is a bit
 
 
 ## Future Features:
-All of the following or almost all of the following are expected in the next month in order to be ready for Ludum Dare in time. They will get checkmarks as they get completed.
+All the following or almost all the following are expected in the next month in order to be ready for Ludum Dare in time. They will get checkmarks as they get completed.
 
 ```
--Particle System
+-Particle System (Basic Version implemented)
 -3D Audio
 -Raycasting
 -AABB Collision Detection

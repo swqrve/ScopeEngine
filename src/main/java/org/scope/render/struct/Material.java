@@ -15,7 +15,7 @@ public class Material implements UniformConstructor {
 
     @Getter @Setter private float reflectance;
 
-    @Getter @Setter private Texture texture;
+    @Getter @Setter private Texture texture = null;
 
     public Material(Vector4f ambient, Vector4f diffuse, Vector4f specular, float reflectance, Texture texture) {
         this.ambient = ambient;
@@ -53,15 +53,6 @@ public class Material implements UniformConstructor {
 
     public boolean hasTexture() {
         return texture != null;
-    }
-
-    @Override
-    public void createUniforms(ShaderProgram shader, String uniformName) {
-        shader.createUniform(uniformName + ".ambient");
-        shader.createUniform(uniformName + ".diffuse");
-        shader.createUniform(uniformName + ".specular");
-        shader.createUniform(uniformName + ".reflectance");
-        shader.createUniform(uniformName + ".hasTexture");
     }
 
     @Override

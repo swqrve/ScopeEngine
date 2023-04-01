@@ -1,5 +1,6 @@
 package org.scope.game;
 
+import com.sun.xml.internal.ws.wsdl.writer.document.Part;
 import org.joml.Matrix4f;
 import org.joml.Random;
 import org.joml.Vector3f;
@@ -13,6 +14,8 @@ import org.scope.light.types.SpotLight;
 import org.scope.logger.Debug;
 import org.scope.manager.InputManager;
 import org.scope.manager.LightManager;
+import org.scope.particle.ParticleSetting;
+import org.scope.particle.ParticleSystem;
 import org.scope.render.struct.Material;
 import org.scope.render.ShaderProgram;
 import org.scope.render.Texture;
@@ -45,6 +48,8 @@ public class TestGame implements Scene {
     private Material objectMaterial;
     private LightManager lightManager;
 
+    private ParticleSystem system;
+
     @Override
     public void init() {
         // CREATE A CAMERA AND SET IT AS THE DEFAULT CAMERA
@@ -68,7 +73,6 @@ public class TestGame implements Scene {
 
         // MATERIAL
         objectMaterial = new Material(senkuTexture, 32.0f);
-        objectMaterial.createUniforms(defaultShader, "material");
         objectMaterial.setUniforms(defaultShader, "material");
 
         // LIGHTS
@@ -78,16 +82,25 @@ public class TestGame implements Scene {
         lightManager.addLight(new DirectionalLight(lightColor, new Vector3f(0.0f, 0.0f, 0.0f), 1.0f));
         lightManager.addLight(new SpotLight(lightColor, new Vector3f(0.0f, 5.0f, 0.0f), 50.0f, 0.0f, 0.0f, 1.0f, new Vector3f(0.0f, -1.0f, 0.0f), (float) Math.cos(Math.toRadians(15))));
 
-        lightManager.createUniforms();
         lightManager.setUniforms();
 
-        // CREATE STANDARD SHADER INFO
-        createShaderUniforms(defaultShader);
-        createShaderUniforms(skyBoxShader);
+        Vector3f particleBasePosition = new Vector3f(0.0f, 0.0f, 0.0f);
+        ParticleSetting setting = new ParticleSetting()
+                .setBasePosition(particleBasePosition.x, particleBasePosition.y, particleBasePosition.z)
+                .setBaseVelocity(0.25f, 1.0f, 0.25f)
+                .setStartingColor(47 / 255.0f, 130 / 255.0f, 186 / 255.0f, 1.0f)
+                .setFinalColor( 151 / 255.0f, 214 / 255.0f, 255 / 255.0f, 1.0f )
+                .setVelocityDisplacement(2.0f)
+                .setStartSize(1.0f)
+                .setEndSize(0.0f)
+                .setLifeTime(1.0f)
+                .setRotation(0.0f)
+                .setAffectedByLight(false)
+                .setEmitsLight(false)
+                .setShrinking(true)
+                .setMaterial(new Material(Material.StandardMaterial.EMERALD));
 
-        // SET PROJECTION MATRIX, THE ONLY OF THE THREE MATRICES NOT UPDATED PER FRAME
-        defaultShader.setMatrix4f("projection", camera.getCameraProjection());
-        defaultShader.setMatrix4f("projection", camera.getCameraProjection());
+        system = new ParticleSystem(defaultShader, setting,202);
     }
 
 
@@ -124,11 +137,16 @@ public class TestGame implements Scene {
         lightManager.getCurrentDirectionalLight().getDirection().y = (float) Math.cos(angRad);
 
         lightManager.getCurrentDirectionalLight().setUniforms(defaultShader, "directionalLight");
+
+        system.update(deltaTime);
     }
 
     @Override
     public void render() {
-        // Render quad at -1.0f 0.0f 3.0f scaled 2x
+        defaultShader.setMatrix4f("projection", camera.getCameraProjection());
+        defaultShader.setBool("isAParticle", false);
+
+/*        // Render quad at -1.0f 0.0f 3.0f scaled 2x
         modelMatrix.identity().translate(-1.0f, 0.0f, 3.0f).scale(2.0f);
         defaultShader.setMatrix4f("model", modelMatrix);
         defaultShader.setBool("usesLighting", true);
@@ -138,10 +156,10 @@ public class TestGame implements Scene {
         modelMatrix.identity().translate(1.0f, 0.0f, 0.0f).scale(2.0f);
         defaultShader.setMatrix4f("model", modelMatrix);
         defaultShader.setBool("usesLighting", true);
-        cube.render(camera, defaultShader, senkuTexture);
+        cube.render(camera, defaultShader, senkuTexture);*/
 
         // Render cubes with lamp texture representing light positions
-        for (int i = 0; i < lightManager.getNextFreeIndex(lightManager.getPointLights()); i++) {
+/*        for (int i = 0; i < lightManager.getNextFreeIndex(lightManager.getPointLights()); i++) {
             modelMatrix.identity().translate(lightManager.getPointLights()[i].getPosition()).scale(0.55f);
             defaultShader.setMatrix4f("model", modelMatrix);
             defaultShader.setBool("usesLighting", false);
@@ -154,7 +172,17 @@ public class TestGame implements Scene {
             defaultShader.setMatrix4f("model", modelMatrix);
             defaultShader.setBool("usesLighting", false);
             cube.render(camera, defaultShader, lampTexture);
-        }
+        }*/
+
+        // Particle Emitter Cube
+        objectMaterial.setUniforms(defaultShader, "material");
+        modelMatrix.identity().translate(0.0f, 0.0f, 0.0f).scale(0.10f);
+        defaultShader.setMatrix4f("model", modelMatrix);
+        defaultShader.setBool("usesLighting", false);
+        cube.render(camera, defaultShader, Texture.getErrorTexture());
+
+        // Particle system, render particles
+        system.render();
 
         // Render skybox
         skybox.render(camera);
@@ -167,6 +195,12 @@ public class TestGame implements Scene {
         // Basic input for closing the game and switch for wire frame mode
         if (input.isKeyPressed(GLFW.GLFW_KEY_ESCAPE)) ScopeEngine.getInstance().end();
         if (input.isKeyPressed(GLFW.GLFW_KEY_X)) glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); else glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+        if (System.currentTimeMillis() - lastCreated >= 250f) {
+            System.out.println("Creating a particle!");
+            system.emitParticle();
+            lastCreated = System.currentTimeMillis();
+        }
 
         if (input.isKeyPressed(GLFW.GLFW_KEY_SPACE) && System.currentTimeMillis() - lastCreated >= 3000f) {
             lightManager.addLight(new PointLight(lightColor, new Vector3f(camera.getCameraPosition()), 1.0f));
@@ -181,12 +215,6 @@ public class TestGame implements Scene {
 
             lastCreated = System.currentTimeMillis();
         }
-    }
-
-    private void createShaderUniforms(ShaderProgram shader) {
-        shader.createUniform("projection");
-        shader.createUniform("model");
-        shader.createUniform("view"); // You don't manually set "view" other than in your own models render functions,
     }
 
     @Override

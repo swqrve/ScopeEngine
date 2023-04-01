@@ -112,7 +112,6 @@ public class SkyBox extends Model {
         loadCubeMap(directory);
 
         skyboxShader.bind();
-        skyboxShader.createUniform("skybox");
         skyboxShader.setInt("skybox", 0);
     }
 

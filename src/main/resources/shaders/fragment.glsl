@@ -5,6 +5,9 @@ in vec2 texCoords;
 in vec3 normal;
 in vec3 fragPos;
 
+in vec4 particleColor;
+flat in int isParticle;
+
 const int MAX_POINT_LIGHTS = 5;
 const int MAX_SPOT_LIGHTS = 5;
 
@@ -59,7 +62,6 @@ uniform DirectionalLight directionalLight;
 
 uniform int usesLighting;
 
-
 uniform vec3 viewPos;
 
 vec4 ambientC;
@@ -83,7 +85,6 @@ void main() {
         for (int i = 0; i < MAX_SPOT_LIGHTS; i++) if (spotLight[i].intensity > 0) diffuseSpecularComp += calcSpotLight(spotLight[i], fragPos, normal);
 
         fragColor = ambientC * vec4(ambientLight, 1.0) + diffuseSpecularComp;
-
         return;
     }
 
@@ -91,6 +92,8 @@ void main() {
         fragColor = ambientC;
         return;
     }
+
+    fragColor = ambientC;
 }
 
 vec4 calcSpotLight(SpotLight light, vec3 position, vec3 normal) {
@@ -156,6 +159,13 @@ void setupColors(Material material, vec2 texCoord) {
         diffuseC = ambientC;
         speculrC = ambientC;
         return;
+    }
+
+   if (isParticle == 1) {
+       ambientC = particleColor;
+       diffuseC = ambientC;
+       speculrC = ambientC;
+       return;
     }
 
     ambientC = material.ambient;

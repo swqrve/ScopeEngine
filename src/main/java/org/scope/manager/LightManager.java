@@ -77,17 +77,6 @@ public class LightManager {
         return lights.length;
     }
 
-    public void createUniforms() {
-        if (currentDirectionalLight != null) currentDirectionalLight.createUniforms(shader, "directionalLight");
-        for (int i = 0; i < maxPointLights; i++) pointLights[0].createUniforms(shader, "pointLight[" + i + "]");
-        for (int i = 0; i < maxSpotLights; i++) spotLights[0].createUniforms(shader, "spotLight[" + i + "]");
-
-        shader.createUniform("specularPower");
-        shader.createUniform("ambientLight");
-
-        shader.createUniform("usesLighting");
-    }
-
     public void setUniforms() {
         if (currentDirectionalLight != null) currentDirectionalLight.setUniforms(shader, "directionalLight");
         for (int i = 0; i < getNextFreeIndex(pointLights); i++) pointLights[i].setUniforms(shader,  "pointLight[" + i + "]");

@@ -20,11 +20,6 @@ public abstract class Light implements UniformConstructor {
     }
 
     // if (getPosition() != null) This exists because directional lights don't have a position, could act like it's the direction if I want a cleaner code base but eh
-    public void createDefaultUniforms(ShaderProgram shader, String uniformName) {
-        shader.createUniform(uniformName + ".color");
-        if (getPosition() != null) shader.createUniform(uniformName + ".position");
-        shader.createUniform(uniformName + ".intensity");
-    }
 
     public void setDefaultUniforms(ShaderProgram shader, String uniformName) {
         shader.setVec3(uniformName + ".color", getColor());
