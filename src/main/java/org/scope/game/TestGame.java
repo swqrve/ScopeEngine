@@ -184,7 +184,7 @@ public class TestGame implements Scene {
         system[1].update(deltaTime);
 
         if (collider.contains(camera.getCameraPosition())) System.out.println("Colliding!");
-        if (new Raycast(camera.getCameraPosition(), camera.getDirection()).intersectsABB(collider)) System.out.println("Stop looking at it!");
+        if (Raycast.intersectsAABB(camera.getCameraPosition(), camera.getDirection(), collider)) System.out.println("Stop looking at it!");
     }
 
     @Override

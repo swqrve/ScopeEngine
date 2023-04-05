@@ -29,38 +29,7 @@ public class Raycast {
     }
 
     public boolean intersectsABB(AABB aabb) {
-        Vector3f inverseDirection = getInverseDirection();
-
-        float tMinX = (aabb.getBottomLeftCorner().x - origin.x) * inverseDirection.x;
-        float tMaxX = (aabb.getTopRightCorner().x - origin.x) * inverseDirection.x;
-        if (inverseDirection.x < 0) {
-            float tmp = tMinX;
-            tMinX = tMaxX;
-            tMaxX = tmp;
-        }
-
-        float tMinY = (aabb.getBottomLeftCorner().y - origin.y) * inverseDirection.y;
-        float tMaxY = (aabb.getTopRightCorner().y - origin.y) * inverseDirection.y;
-        if (inverseDirection.y < 0) {
-            float tmp = tMinY;
-            tMinY = tMaxY;
-            tMaxY = tmp;
-        }
-
-        float tMinZ = (aabb.getBottomLeftCorner().z - origin.z) * inverseDirection.z;
-        float tMaxZ = (aabb.getTopRightCorner().z - origin.z) * inverseDirection.z;
-        if (inverseDirection.z < 0) {
-            float tmp = tMinZ;
-            tMinZ = tMaxZ;
-            tMaxZ = tmp;
-        }
-
-        float tEntry = Math.max(Math.max(tMinX, tMinY), tMinZ);
-        float tExit = Math.min(Math.min(tMaxX, tMaxY), tMaxZ);
-
-        if (tEntry > tExit || tExit < 0) return false;
-
-        return true;
+        return intersectionCheck(this.origin, getInverseDirection(), aabb);
     }
 
     public static boolean intersectsAABB(Vector3f position, Vector3f direction, AABB aabb) {
@@ -68,25 +37,29 @@ public class Raycast {
         float invDirY = 1.0f / direction.y;
         float invDirZ = 1.0f / direction.z;
 
-        float tMinX = (aabb.getBottomLeftCorner().x - position.x) * invDirX;
-        float tMaxX = (aabb.getTopRightCorner().x - position.x) * invDirX;
-        if (invDirX < 0) {
+        return intersectionCheck(position, new Vector3f(invDirX, invDirY, invDirZ), aabb);
+    }
+
+    private static boolean intersectionCheck(Vector3f origin, Vector3f inverse, AABB aabb) {
+        float tMinX = (aabb.getBottomLeftCorner().x - origin.x) * inverse.x;
+        float tMaxX = (aabb.getTopRightCorner().x - origin.x) * inverse.x;
+        if (inverse.x < 0) {
             float tmp = tMinX;
             tMinX = tMaxX;
             tMaxX = tmp;
         }
 
-        float tMinY = (aabb.getBottomLeftCorner().y - position.y) * invDirY;
-        float tMaxY = (aabb.getTopRightCorner().y - position.y) * invDirY;
-        if (invDirY < 0) {
+        float tMinY = (aabb.getBottomLeftCorner().y - origin.y) * inverse.y;
+        float tMaxY = (aabb.getTopRightCorner().y - origin.y) * inverse.y;
+        if (inverse.y < 0) {
             float tmp = tMinY;
             tMinY = tMaxY;
             tMaxY = tmp;
         }
 
-        float tMinZ = (aabb.getBottomLeftCorner().z - position.z) * invDirZ;
-        float tMaxZ = (aabb.getTopRightCorner().z - position.z) * invDirZ;
-        if (invDirZ < 0) {
+        float tMinZ = (aabb.getBottomLeftCorner().z - origin.z) * inverse.z;
+        float tMaxZ = (aabb.getTopRightCorner().z - origin.z) * inverse.z;
+        if (inverse.z < 0) {
             float tmp = tMinZ;
             tMinZ = tMaxZ;
             tMaxZ = tmp;
