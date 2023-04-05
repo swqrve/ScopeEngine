@@ -27,8 +27,10 @@ import static org.lwjgl.opengl.GL43C.GL_SHADER_STORAGE_BUFFER;
 public class ParticleSystem {
     private final Particle[] particlePool;
 
+    @Getter private final int particlePoolSize;
+
     @Getter @Setter private ParticleSetting particleSettings;
-    private final ShaderProgram shader;
+    @Getter private final ShaderProgram shader;
 
     private final Vector3f incrementVector = new Vector3f();
 
@@ -42,6 +44,8 @@ public class ParticleSystem {
 
 
     public ParticleSystem(ShaderProgram shader, ParticleSetting setting, int particlePoolSize) {
+        this.particlePoolSize = particlePoolSize;
+
         if (ModelManager.getModel("quad") == null) new Quad();
         particleModel = (Quad) ModelManager.getModel("quad");
 
@@ -169,6 +173,7 @@ public class ParticleSystem {
         particle.setBillboard(particleSettings.isBillboard());
         particle.setFades(particleSettings.isFades());
     }
+
     public void emitParticle() {
         if (particleSettings == null) {
             Debug.log(Debug.LogLevel.WARN, "Attempting to emit a particle when no particle settings have been set! No particle will be emitted.");

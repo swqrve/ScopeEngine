@@ -1,6 +1,5 @@
 package org.scope.game;
 
-import com.sun.xml.internal.ws.wsdl.writer.document.Part;
 import org.joml.Matrix4f;
 import org.joml.Random;
 import org.joml.Vector3f;
@@ -8,10 +7,11 @@ import org.lwjgl.glfw.GLFW;
 import org.scope.ScopeEngine;
 import org.scope.camera.Camera;
 import org.scope.camera.type.FreeFlyCamera;
+import org.scope.collisions.Raycast;
+import org.scope.collisions.coliders.AABB;
 import org.scope.light.types.DirectionalLight;
 import org.scope.light.types.PointLight;
 import org.scope.light.types.SpotLight;
-import org.scope.logger.Debug;
 import org.scope.manager.InputManager;
 import org.scope.manager.LightManager;
 import org.scope.particle.ParticleSetting;
@@ -26,7 +26,11 @@ import org.scope.scene.Scene;
 import org.scope.util.FileUtil;
 
 
-import static org.lwjgl.opengl.GL11C.*;
+import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL11C.GL_FILL;
+import static org.lwjgl.opengl.GL11C.GL_FRONT_AND_BACK;
+import static org.lwjgl.opengl.GL11C.GL_LINE;
+import static org.lwjgl.opengl.GL11C.GL_LINES;
 
 public class TestGame implements Scene {
     private FreeFlyCamera camera;
@@ -49,6 +53,8 @@ public class TestGame implements Scene {
     private LightManager lightManager;
 
     private final ParticleSystem[] system = new ParticleSystem[2];
+
+    private final AABB collider = new AABB(new Vector3f(3.5f, 3.5f, 3.5f), new Vector3f(1.0f, 1.0f, 1.0f), true);
 
     @Override
     public void init() {
@@ -109,11 +115,11 @@ public class TestGame implements Scene {
                 .setShrinking(true)
                 .setMaterial(new Material(Material.StandardMaterial.EMERALD));
 
-        system[0] = new ParticleSystem(defaultShader, setting,202);
+        system[0] = new ParticleSystem(defaultShader, setting,15);
 
-         setting = new ParticleSetting()
+        setting = new ParticleSetting()
                 .setBasePosition(particleBasePosition.x + 5, particleBasePosition.y, particleBasePosition.z)
-                .setBaseVelocity(0.25f, 1.0f, 0.25f)
+                .setBaseVelocity(0.25f, 0.50f, 0.25f)
                 .setStartingColor(174 / 255.0f, 119 / 255.0f, 57 / 255.0f, 1.0f)
                 .setFinalColor( 247 / 255.0f, 78 / 255.0f, 78 / 255.0f, 0.0f )
                 .setColorStartXVariation(1.1f)
@@ -127,7 +133,7 @@ public class TestGame implements Scene {
                 .setEndSize(0.0f)
                 .setSizeDisplacementMax(1.0f)
                 .setSizeDisplacementMin(0.4f)
-                .setLifeTime(5.0f)
+                .setLifeTime(2.0f)
                 .setRotation(0.0f)
                 .setBillboard(true)
                 .setAffectedByLight(false)
@@ -136,7 +142,7 @@ public class TestGame implements Scene {
                 .setMaterial(new Material(Material.StandardMaterial.EMERALD));
 
 
-        system[1] = new ParticleSystem(defaultShader, setting,202);
+        system[1] = new ParticleSystem(defaultShader, setting,15);
     }
 
 
@@ -176,6 +182,9 @@ public class TestGame implements Scene {
 
         system[0].update(deltaTime);
         system[1].update(deltaTime);
+
+        if (collider.contains(camera.getCameraPosition())) System.out.println("Colliding!");
+        if (new Raycast(camera.getCameraPosition(), camera.getDirection()).intersectsABB(collider)) System.out.println("Stop looking at it!");
     }
 
     @Override
@@ -183,14 +192,13 @@ public class TestGame implements Scene {
         defaultShader.setMatrix4f("projection", camera.getCameraProjection());
         defaultShader.setBool("isAParticle", false);
 
-/*        // Render quad at -1.0f 0.0f 3.0f scaled 2x
-        modelMatrix.identity().translate(-1.0f, 0.0f, 3.0f).scale(2.0f);
+        modelMatrix.identity().translate(collider.getCenter()).scale(0.5f);
         defaultShader.setMatrix4f("model", modelMatrix);
-        defaultShader.setBool("usesLighting", true);
-        quad.render(camera, defaultShader, senkuTexture);
+        defaultShader.setBool("usesLighting", false);
+        cube.render(camera, defaultShader, senkuTexture);
 
         // Render cube at 1.0f 0.0f 0.0f scaled 2x
-        modelMatrix.identity().translate(1.0f, 0.0f, 0.0f).scale(2.0f);
+        /* modelMatrix.identity().translate(1.0f, 0.0f, 0.0f).scale(2.0f);
         defaultShader.setMatrix4f("model", modelMatrix);
         defaultShader.setBool("usesLighting", true);
         cube.render(camera, defaultShader, senkuTexture);*/
@@ -242,14 +250,11 @@ public class TestGame implements Scene {
         if (input.isKeyPressed(GLFW.GLFW_KEY_ESCAPE)) ScopeEngine.getInstance().end();
         if (input.isKeyPressed(GLFW.GLFW_KEY_X)) glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); else glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
-        if (System.currentTimeMillis() - lastCreated >= 4000f) {
-            long start = System.currentTimeMillis();
-            for (int i = 0; i < 202; i++) {
-                system[0].emitParticle();
-                system[1].emitParticle();
-            }
+        if (System.currentTimeMillis() - lastCreated >= 4000f) for (int i = 0; i < system[0].getParticlePoolSize(); i++) {
+            system[0].emitParticle();
+            system[1].emitParticle();
+
             lastCreated = System.currentTimeMillis();
-            Debug.log(Debug.LogLevel.INFO, "It took " + (lastCreated - start) + " milliseconds to emit all 200 particles!");
         }
 
         if (input.isKeyPressed(GLFW.GLFW_KEY_SPACE) && System.currentTimeMillis() - lastCreated >= 3000f) {
