@@ -53,9 +53,9 @@ If you'd like to check out how to use it check out the game package. It is a bit
 All the following or almost all the following are expected in the next month in order to be ready for Ludum Dare in time. They will get checkmarks as they get completed.
 
 ```
--Particle System (Basic Version implemented) ✔️
--AABB Collision Detection
--Raycasting
+-Particle System (Version 1 Implemented) ✔️
+-AABB Collision Detection (Basic Version implemented / Not Entirely decided on how I want to use it) ✔️
+-Raycasting (Basic Version implemented) ✔️
 -3D Audio
 -Text Rendering
 ```
