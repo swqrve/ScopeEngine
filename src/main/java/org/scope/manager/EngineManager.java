@@ -19,7 +19,7 @@ public class EngineManager {
     @Getter private boolean running;
 
     @Getter private int fps;
-    private float frameTime;
+    private final float frameTime;
 
     private GLFWErrorCallback errorCallback;
 
@@ -27,7 +27,7 @@ public class EngineManager {
         ConstManager.createConstant("zNear", 0.1f);
         ConstManager.createConstant("zFar", 100.0f);
         ConstManager.createConstant("Nanosecond", 1000000000D);
-        ConstManager.createConstant("FrameRate", 1000.0f);
+        ConstManager.createConstant("FrameRate", 10000.0f);
 
         frameTime = 1.0f / (float) ConstManager.getConstant("FrameRate");
     }

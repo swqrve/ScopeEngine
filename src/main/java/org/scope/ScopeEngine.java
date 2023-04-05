@@ -9,6 +9,8 @@ import org.scope.util.EnginePreferences;
 
 import java.util.Random;
 
+import static org.lwjgl.opengl.GL11C.*;
+
 public class ScopeEngine {
     @Getter private static ScopeEngine instance;
     @Getter private final EnginePreferences preferences;
@@ -53,5 +55,13 @@ public class ScopeEngine {
     public void setCurrentScene(Scene nextScene) {
         if (currentScene != null) currentScene.cleanup();
         this.currentScene = nextScene;
+    }
+
+    public void enableBlending() {
+        glEnable(GL_BLEND);
+    }
+
+    public void disableBlending() {
+        glDisable(GL_BLEND);
     }
 }

@@ -1,4 +1,4 @@
-#version 330 core
+#version 430 core
 out vec4 fragColor;
 
 in vec2 texCoords;
@@ -93,6 +93,7 @@ void main() {
         return;
     }
 
+    if (ambientC.a < 0.1) discard;
     fragColor = ambientC;
 }
 

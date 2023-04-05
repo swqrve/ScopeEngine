@@ -1,11 +1,7 @@
-#version 330 core
+#version 430 core
 layout (location = 0) in vec3 aPos;
 layout (location = 1) in vec3 aNormal;
 layout (location = 2) in vec2 aTexCoords;
-
-// TODO: If we want higher particle system sizes, I need to look into either doing the matrix math in seperate arrays for the position, scaling, rotation and do it here
-// TODO: or implement SSBOs https://www.khronos.org/opengl/wiki/Shader_Storage_Buffer_Object which are annoying but perfect for this scenario really
-const int PARTICLE_SYSTEM_SIZE = 202; // This may be different on other systems which can be checked in opengl, but this is the max size on my system.
 
 out vec2 texCoords;
 out vec3 normal;
@@ -19,16 +15,23 @@ uniform mat4 view;
 uniform mat4 projection;
 
 // Particle Info
-uniform mat4 particleModelMatrices[PARTICLE_SYSTEM_SIZE];
-uniform vec4 particleColors[PARTICLE_SYSTEM_SIZE];
 uniform int isAParticle;
+
+struct Particle {
+    mat4 model;
+    vec4 color;
+};
+
+layout (std430, binding = 0) buffer ParticleSSBO {
+    Particle particles[];
+};
 
 void main() { // REFACTOR TO CLEAN UP LATER
     isParticle = isAParticle;
     if (isParticle == 1) {
-        particleColor = particleColors[gl_InstanceID];
+        particleColor = particles[gl_InstanceID].color;
 
-        vec4 worldPos = particleModelMatrices[gl_InstanceID] * vec4(aPos, 1.0);
+        vec4 worldPos = particles[gl_InstanceID].model * vec4(aPos, 1.0);
         gl_Position = projection * view * worldPos;
 
         normal = normalize(worldPos).xyz;

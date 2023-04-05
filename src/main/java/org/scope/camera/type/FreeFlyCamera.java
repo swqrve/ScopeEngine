@@ -16,7 +16,7 @@ public class FreeFlyCamera extends Camera {
     @Getter @Setter private float lastX;
     @Getter @Setter private float lastY;
 
-    @Getter @Setter private float sensitivity = 0.25f; // TODO: Add to constructor
+    @Getter @Setter private float sensitivity = 0.10f; // TODO: Add to constructor
 
     public FreeFlyCamera(float x, float y, float z, float fov) {
         super(x, y, z, fov);

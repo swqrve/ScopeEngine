@@ -1,14 +1,13 @@
 package org.scope.particle;
 
-import com.sun.prism.ps.Shader;
 import lombok.Getter;
 import lombok.Setter;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL30;
 import org.lwjgl.opengl.GL31;
+import org.lwjgl.system.MemoryUtil;
 import org.scope.ScopeEngine;
 import org.scope.camera.Camera;
 import org.scope.logger.Debug;
@@ -17,29 +16,31 @@ import org.scope.render.ShaderProgram;
 import org.scope.render.type.Quad;
 import org.scope.util.MathUtil;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.nio.FloatBuffer;
 
-import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL11C.GL_UNSIGNED_INT;
 import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
-import static org.lwjgl.opengl.GL31.glDrawArraysInstanced;
-import static org.lwjgl.opengl.GL31.glDrawElementsInstanced;
+import static org.lwjgl.opengl.GL15.*;
+import static org.lwjgl.opengl.GL30C.glBindBufferBase;
+import static org.lwjgl.opengl.GL43C.GL_SHADER_STORAGE_BUFFER;
 
 public class ParticleSystem {
-    @Getter private final Particle[] particlePool;
+    private final Particle[] particlePool;
 
-    @Getter @Setter ParticleSetting particleSettings;
-    @Getter private final ShaderProgram shader;
+    @Getter @Setter private ParticleSetting particleSettings;
+    private final ShaderProgram shader;
 
-    private final List<Particle> particlesToRender = new ArrayList<>();
-
-    private final Matrix4f particleModelMatrix = new Matrix4f();
-    private final Vector4f particleColor = new Vector4f();
     private final Vector3f incrementVector = new Vector3f();
 
     private final Quad particleModel;
+    private final Vector4f colorOffSet = new Vector4f();
 
-    // TODO: Particle pool size is by default 202 in the shader, can't be changed atm
+    private final int ssbo;
+    private final Matrix4f[] matrices;
+    private final Vector4f[] colors;
+    private final FloatBuffer dataBuffer;
+
+
     public ParticleSystem(ShaderProgram shader, ParticleSetting setting, int particlePoolSize) {
         if (ModelManager.getModel("quad") == null) new Quad();
         particleModel = (Quad) ModelManager.getModel("quad");
@@ -50,6 +51,17 @@ public class ParticleSystem {
 
         this.particleSettings = setting;
         this.shader = shader;
+
+        ssbo = glGenBuffers();
+
+        matrices = new Matrix4f[particlePoolSize];
+        colors = new Vector4f[particlePoolSize];
+        dataBuffer = MemoryUtil.memAllocFloat(20 * particlePoolSize);
+
+        for (int i = 0; i < particlePoolSize; i++) {
+            matrices[i] = new Matrix4f();
+            colors[i] = new Vector4f();
+        }
     }
 
     public void update(double deltaTime) {
@@ -63,48 +75,100 @@ public class ParticleSystem {
             }
 
             particle.getPosition().add(incrementVector.set(particle.getVelocity()).mul((float) deltaTime));
+
             if (particle.isSpinningParticle()) particle.setRotation((float) (particle.getRotationSpeed() * deltaTime));
+            if (particle.isFades()) particle.setAlpha((float) (particle.getAlpha() - (particle.getFadeSpeed() * deltaTime)));
         }
     }
 
     public void render(Camera camera) {
-        for (Particle particle : particlePool) if (particle.isActive()) particlesToRender.add(particle);
-        if (particlesToRender.size() < 1) return;
-
         shader.setBool("isAParticle", true);
         shader.setBool("usesLighting", false);
 
         shader.setMatrix4f("view", camera.getViewMatrix());
 
-        for (int i = 0; i < particlesToRender.size(); i++) {
-            Particle particle = particlesToRender.get(i);
+        particleSettings.getMaterial().setUniforms(shader, "material");
 
-            particle.getMaterial().setUniforms(shader, "material");
-            if (particle.getMaterial().getTexture() == null) {
-                particleColor.set(particle.getFinalColor()).lerp(particle.getStartingColor(), particle.getLifePercentageLived());
-                shader.setVec4("particleColors[" + i + "]", particleColor);
-            }
+        int index = 0;
+        for (Particle particle : particlePool) {
+            if (!particle.isActive()) continue;
+
+            if (particleSettings.getMaterial().getTexture() == null) colors[index].set(particle.getFinalColor()).lerp(particle.getStartingColor(), particle.getLifePercentageLived());
+
 
             float sizeScale = 1.0f;
             if (particle.isShrinking()) sizeScale = (MathUtil.lerp(particle.getEndSize(), particle.getStartSize(), particle.getLifePercentageLived()));
 
+            matrices[index].identity().translate(particle.getPosition());
+            if (particle.isBillboard()) camera.getViewMatrix().transpose3x3(matrices[index]);
+            matrices[index].rotateX(particle.getRotation()).scale(sizeScale);
 
-            shader.setMatrix4f("particleModelMatrices[" + i + "]",
-                    particleModelMatrix.identity()
-                            .translate(particle.getPosition())
-                            .rotateX(particle.getRotation())
-                            .scale(sizeScale)
-            );
+            index++;
         }
 
-        if (particlesToRender.get(0).getMaterial().getTexture() != null) particlesToRender.get(0).getMaterial().getTexture().bind(GL_TEXTURE0);
+        dataBuffer.position(0);
+        for (int i = 0; i < index; i++) {
+            matrices[i].get(dataBuffer);
+            dataBuffer.position(dataBuffer.position() + 16);
+
+            colors[i].get(dataBuffer);
+            dataBuffer.position(dataBuffer.position() + 4);
+        }
+
+        dataBuffer.rewind();
+
+        glBindBuffer(GL_SHADER_STORAGE_BUFFER, ssbo);
+        glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, ssbo);
+        glBufferData(GL_SHADER_STORAGE_BUFFER, dataBuffer, GL_DYNAMIC_DRAW);
+
+        if (particleSettings.getMaterial().getTexture() != null) particleSettings.getMaterial().getTexture().bind(GL_TEXTURE0);
+
         particleModel.bindVAO();
-        GL31.glDrawElementsInstanced(GL11.GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, particlesToRender.size());
+        GL31.glDrawElementsInstanced(GL11.GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0, index);
 
         shader.setBool("isAParticle", false);
-        particlesToRender.clear();
     }
 
+
+    public void setParticleToSettings(Particle particle) {
+        particle.getPosition().set(particleSettings.getBasePosition());
+
+        particle.setRotation(particleSettings.getRotation());
+        particle.setRotationSpeed(particleSettings.getRotationSpeed());
+
+        particle.getVelocity().set(particleSettings.getBaseVelocity());
+        particle.getVelocity().x += particleSettings.getVelocityDisplacement() * (ScopeEngine.getInstance().getRandom().nextFloat() -0.5f);
+        particle.getVelocity().y += particleSettings.getVelocityDisplacement() * (ScopeEngine.getInstance().getRandom().nextFloat() -0.5f);
+        particle.getVelocity().z += particleSettings.getVelocityDisplacement() * (ScopeEngine.getInstance().getRandom().nextFloat() -0.5f);
+
+        colorOffSet.set(particleSettings.getStartingColor());
+        colorOffSet.x *= 1.0 + ScopeEngine.getInstance().getRandom().nextDouble() * (particleSettings.getColorStartXVariation() - 1.0f);
+        colorOffSet.y *= 1.0 + ScopeEngine.getInstance().getRandom().nextDouble() * (particleSettings.getColorStartYVariation() - 1.0f);
+        colorOffSet.z *= 1.0 + ScopeEngine.getInstance().getRandom().nextDouble() * (particleSettings.getColorStartZVariation() - 1.0f);
+        particle.getStartingColor().set(colorOffSet);
+
+        colorOffSet.set(particleSettings.getFinalColor());
+        colorOffSet.x *= 1.0 + ScopeEngine.getInstance().getRandom().nextDouble() * (particleSettings.getColorEndXVariation() - 1.0f);
+        colorOffSet.y *= 1.0 + ScopeEngine.getInstance().getRandom().nextDouble() * (particleSettings.getColorEndYVariation() - 1.0f);
+        colorOffSet.z *= 1.0 + ScopeEngine.getInstance().getRandom().nextDouble() * (particleSettings.getColorEndZVariation() - 1.0f);
+        particle.getFinalColor().set(colorOffSet);
+
+        double displacementFactor = particleSettings.getSizeDisplacementMin() + ScopeEngine.getInstance().getRandom().nextDouble() * (particleSettings.getSizeDisplacementMax() - particleSettings.getSizeDisplacementMin());
+        particle.setStartSize((float) (particleSettings.getStartSize() * displacementFactor));
+        particle.setEndSize(particleSettings.getEndSize());
+
+        particle.setLifeTime(particleSettings.getLifeTime());
+        particle.setLifeRemaining(particle.getLifeTime());
+
+        particle.setAlpha(particleSettings.getStartingAlpha());
+        particle.setFadeSpeed(particleSettings.getFadeSpeed());
+
+        particle.setShrinking(particleSettings.isShrinking());
+        particle.setEmitsLight(particleSettings.isEmitsLight());
+        particle.setSpinningParticle(particleSettings.isSpins());
+        particle.setBillboard(particleSettings.isBillboard());
+        particle.setFades(particleSettings.isFades());
+    }
     public void emitParticle() {
         if (particleSettings == null) {
             Debug.log(Debug.LogLevel.WARN, "Attempting to emit a particle when no particle settings have been set! No particle will be emitted.");
@@ -117,31 +181,7 @@ public class ParticleSystem {
             return;
         }
 
-        particle.getPosition().set(particleSettings.getBasePosition());
-
-        particle.setRotation(particleSettings.getRotation());
-        particle.setRotationSpeed(particleSettings.getRotationSpeed());
-
-        particle.getVelocity().set(particleSettings.getBaseVelocity());
-        particle.getVelocity().x += particleSettings.getVelocityDisplacement() * (ScopeEngine.getInstance().getRandom().nextFloat() -0.5f);
-        particle.getVelocity().y += particleSettings.getVelocityDisplacement() * (ScopeEngine.getInstance().getRandom().nextFloat() -0.5f);
-        particle.getVelocity().z += particleSettings.getVelocityDisplacement() * (ScopeEngine.getInstance().getRandom().nextFloat() -0.5f);
-
-        particle.getStartingColor().set(particleSettings.getStartingColor());
-        particle.getFinalColor().set(particleSettings.getFinalColor());
-        
-        particle.setStartSize(particleSettings.getStartSize());
-        particle.setEndSize(particleSettings.getEndSize());
-        
-        particle.setLifeTime(particleSettings.getLifeTime());
-        particle.setLifeRemaining(particle.getLifeTime());
-
-        particle.setShrinking(particleSettings.isShrinking());
-        particle.setEmitsLight(particleSettings.isEmitsLight());
-        particle.setSpinningParticle(particleSettings.isSpins());
-        
-        particle.setMaterial(particleSettings.getMaterial());
-        
+        setParticleToSettings(particle);
         particle.setActive(true);
     }
 

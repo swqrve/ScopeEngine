@@ -19,6 +19,8 @@ public class ParticleSetting {
     @Getter @Setter private boolean emitsLight = false;
     @Getter @Setter private boolean affectedByLight = false;
     @Getter @Setter private boolean spins = true;
+    @Getter @Setter private boolean billboard = true;
+    @Getter @Setter private boolean fades = false;
 
     @Getter @Setter private Material material;
 
@@ -28,9 +30,23 @@ public class ParticleSetting {
     @Getter @Setter private float startSize = 1.0f;
     @Getter @Setter private float endSize = 0.0f;
 
+    @Getter @Setter private float sizeDisplacementMin = 0.7f;
+    @Getter @Setter private float sizeDisplacementMax = 1.0f;
+
+    @Getter @Setter private float colorStartXVariation = 1.0f;
+    @Getter @Setter private float colorStartYVariation = 1.0f;
+    @Getter @Setter private float colorStartZVariation = 1.0f;
+
+    @Getter @Setter private float colorEndXVariation = 1.0f;
+    @Getter @Setter private float colorEndYVariation = 1.0f;
+    @Getter @Setter private float colorEndZVariation = 1.0f;
+
     @Getter @Setter private float rotation = 0.0f;
     @Getter @Setter private float rotationSpeed = 0.1f;
     @Getter @Setter private float velocityDisplacement = 1.0f;
+
+    @Getter @Setter private float startingAlpha = 1.0f; // TODO: I'd have to implement sorting of the order of particles for alpha values to work, so for now this feature does not do anything.
+    @Getter @Setter private float fadeSpeed = 1.0f;
 
     public ParticleSetting setBasePosition(float x, float y, float z) {
         basePosition.set(x, y, z);

@@ -8,7 +8,7 @@ import org.scope.util.ScopeLauncher;
 
 public class Launcher {
     public static void main(String[] args) {
-        EnginePreferences preferences = new EnginePreferences(Platform.WINDOWS, 1280, 720, false, "ScopeEngine", true, "Engine", true, 5, 5);
+        EnginePreferences preferences = new EnginePreferences(Platform.WINDOWS, 1280, 720, false, "ScopeEngine", false, "Engine", true, 5, 5);
         ScopeLauncher.launch(new TestGame(), args, preferences);
 
         System.out.println("------------------------------------------------------------------------------");

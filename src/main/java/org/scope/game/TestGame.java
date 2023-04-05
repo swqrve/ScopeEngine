@@ -48,7 +48,7 @@ public class TestGame implements Scene {
     private Material objectMaterial;
     private LightManager lightManager;
 
-    private ParticleSystem system;
+    private final ParticleSystem[] system = new ParticleSystem[2];
 
     @Override
     public void init() {
@@ -89,18 +89,54 @@ public class TestGame implements Scene {
                 .setBasePosition(particleBasePosition.x, particleBasePosition.y, particleBasePosition.z)
                 .setBaseVelocity(0.25f, 1.0f, 0.25f)
                 .setStartingColor(47 / 255.0f, 130 / 255.0f, 186 / 255.0f, 1.0f)
-                .setFinalColor( 151 / 255.0f, 214 / 255.0f, 255 / 255.0f, 1.0f )
+                .setFinalColor( 151 / 255.0f, 214 / 255.0f, 255 / 255.0f, 0.0f )
+                .setColorStartXVariation(1.1f)
+                .setColorStartYVariation(1.2f)
+                .setColorStartZVariation(1.1f)
+                .setColorEndXVariation(1.1f)
+                .setColorEndYVariation(1.2f)
+                .setColorEndZVariation(1.1f)
                 .setVelocityDisplacement(2.0f)
-                .setStartSize(1.0f)
+                .setStartSize(0.4f)
                 .setEndSize(0.0f)
+                .setSizeDisplacementMax(1.0f)
+                .setSizeDisplacementMin(0.4f)
                 .setLifeTime(1.0f)
                 .setRotation(0.0f)
+                .setBillboard(true)
                 .setAffectedByLight(false)
                 .setEmitsLight(false)
                 .setShrinking(true)
                 .setMaterial(new Material(Material.StandardMaterial.EMERALD));
 
-        system = new ParticleSystem(defaultShader, setting,202);
+        system[0] = new ParticleSystem(defaultShader, setting,202);
+
+         setting = new ParticleSetting()
+                .setBasePosition(particleBasePosition.x + 5, particleBasePosition.y, particleBasePosition.z)
+                .setBaseVelocity(0.25f, 1.0f, 0.25f)
+                .setStartingColor(174 / 255.0f, 119 / 255.0f, 57 / 255.0f, 1.0f)
+                .setFinalColor( 247 / 255.0f, 78 / 255.0f, 78 / 255.0f, 0.0f )
+                .setColorStartXVariation(1.1f)
+                .setColorStartYVariation(1.2f)
+                .setColorStartZVariation(1.1f)
+                .setColorEndXVariation(1.1f)
+                .setColorEndYVariation(1.2f)
+                .setColorEndZVariation(1.1f)
+                .setVelocityDisplacement(2.0f)
+                .setStartSize(0.4f)
+                .setEndSize(0.0f)
+                .setSizeDisplacementMax(1.0f)
+                .setSizeDisplacementMin(0.4f)
+                .setLifeTime(5.0f)
+                .setRotation(0.0f)
+                .setBillboard(true)
+                .setAffectedByLight(false)
+                .setEmitsLight(false)
+                .setShrinking(true)
+                .setMaterial(new Material(Material.StandardMaterial.EMERALD));
+
+
+        system[1] = new ParticleSystem(defaultShader, setting,202);
     }
 
 
@@ -138,7 +174,8 @@ public class TestGame implements Scene {
 
         lightManager.getCurrentDirectionalLight().setUniforms(defaultShader, "directionalLight");
 
-        system.update(deltaTime);
+        system[0].update(deltaTime);
+        system[1].update(deltaTime);
     }
 
     @Override
@@ -181,8 +218,17 @@ public class TestGame implements Scene {
         defaultShader.setBool("usesLighting", false);
         cube.render(camera, defaultShader, Texture.getErrorTexture());
 
+        // Particle Emitter Cube 2
+        objectMaterial.setUniforms(defaultShader, "material");
+        modelMatrix.identity().translate(5.0f, 0.0f, 0.0f).scale(0.10f);
+        defaultShader.setMatrix4f("model", modelMatrix);
+        defaultShader.setBool("usesLighting", false);
+        cube.render(camera, defaultShader, Texture.getErrorTexture());
+
         // Particle system, render particles
-        system.render();
+        system[0].render();
+        system[1].render();
+
 
         // Render skybox
         skybox.render(camera);
@@ -196,10 +242,14 @@ public class TestGame implements Scene {
         if (input.isKeyPressed(GLFW.GLFW_KEY_ESCAPE)) ScopeEngine.getInstance().end();
         if (input.isKeyPressed(GLFW.GLFW_KEY_X)) glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); else glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
-        if (System.currentTimeMillis() - lastCreated >= 250f) {
-            System.out.println("Creating a particle!");
-            system.emitParticle();
+        if (System.currentTimeMillis() - lastCreated >= 4000f) {
+            long start = System.currentTimeMillis();
+            for (int i = 0; i < 202; i++) {
+                system[0].emitParticle();
+                system[1].emitParticle();
+            }
             lastCreated = System.currentTimeMillis();
+            Debug.log(Debug.LogLevel.INFO, "It took " + (lastCreated - start) + " milliseconds to emit all 200 particles!");
         }
 
         if (input.isKeyPressed(GLFW.GLFW_KEY_SPACE) && System.currentTimeMillis() - lastCreated >= 3000f) {
