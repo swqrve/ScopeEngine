@@ -11,16 +11,22 @@ import org.lwjgl.system.MemoryUtil;
 import org.scope.ScopeEngine;
 import org.scope.camera.Camera;
 import org.scope.logger.Debug;
-import org.scope.render.struct.Model;
 import org.scope.render.ShaderProgram;
 import org.scope.render.Texture;
+import org.scope.render.struct.Model;
 import org.scope.util.BufferUtil;
 
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
-import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL11.GL_CULL_FACE;
+import static org.lwjgl.opengl.GL11.GL_LEQUAL;
+import static org.lwjgl.opengl.GL11.GL_LESS;
+import static org.lwjgl.opengl.GL11.GL_LINEAR;
+import static org.lwjgl.opengl.GL11.glDeleteTextures;
+import static org.lwjgl.opengl.GL11.glDepthFunc;
+import static org.lwjgl.opengl.GL11.glDisable;
 import static org.lwjgl.opengl.GL11C.GL_RED;
 import static org.lwjgl.opengl.GL11C.GL_RGB;
 import static org.lwjgl.opengl.GL11C.GL_RGBA;
@@ -33,7 +39,8 @@ import static org.lwjgl.opengl.GL11C.glBindTexture;
 import static org.lwjgl.opengl.GL11C.glGenTextures;
 import static org.lwjgl.opengl.GL11C.glTexImage2D;
 import static org.lwjgl.opengl.GL11C.glTexParameteri;
-import static org.lwjgl.opengl.GL12.*;
+import static org.lwjgl.opengl.GL12.GL_CLAMP_TO_EDGE;
+import static org.lwjgl.opengl.GL12.GL_TEXTURE_WRAP_R;
 import static org.lwjgl.opengl.GL13.*;
 import static org.lwjgl.opengl.GL13C.GL_TEXTURE_CUBE_MAP;
 import static org.lwjgl.opengl.GL15C.glDeleteBuffers;
@@ -90,6 +97,8 @@ public class SkyBox extends Model {
 
     private int textureID;
 
+    private Matrix4f positionMatrix = new Matrix4f();
+
     public SkyBox(ShaderProgram skyboxShader, String directory) {
         super("skybox");
         this.skyboxShader = skyboxShader;
@@ -120,10 +129,10 @@ public class SkyBox extends Model {
         glDisable(GL_CULL_FACE);
         skyboxShader.bind();
 
-        Matrix4f cameraMatrix = new Matrix4f(camera.getViewMatrix());
-        cameraMatrix.setTranslation(0, 0, 0);
+        positionMatrix.set(camera.getViewMatrix());
+        positionMatrix.setTranslation(0, 0, 0);
 
-        skyboxShader.setMatrix4f("view", cameraMatrix);
+        skyboxShader.setMatrix4f("view", positionMatrix);
         skyboxShader.setMatrix4f("projection", camera.getCameraProjection());
 
         bindVAO();

@@ -20,7 +20,9 @@ public class ShaderProgram {
 
     private final int vertexShaderID;
     private final int fragmentShaderID;
-    
+
+    private final Map<String, Integer> uniforms;
+
     public ShaderProgram(String vertexCode, String fragmentCode) {
         programID = glCreateProgram();
 
@@ -31,6 +33,8 @@ public class ShaderProgram {
         
         vertexShaderID = createShader(vertexCode, GL_VERTEX_SHADER);
         fragmentShaderID = createShader(fragmentCode, GL_FRAGMENT_SHADER);
+        
+        uniforms = new HashMap<>();
         
         link();
     }
@@ -63,52 +67,71 @@ public class ShaderProgram {
         glDeleteShader(fragmentShaderID);
     }
 
+    public void createUniform(String uniformName) {
+        int uniformLocation = GL20.glGetUniformLocation(programID, uniformName);
+        if (uniformLocation < 0) {
+            Debug.log(Debug.LogLevel.ERROR, "Failed to find uniform " + uniformName, true);
+            return;
+        }
+
+        uniforms.put(uniformName, uniformLocation);
+    }
+    
     public void setBool(String name, boolean value) {
         bind();
-        glUniform1i(GL20.glGetUniformLocation(programID, name), (value) ? 1 : 0);
+        if (!uniforms.containsKey(name)) createUniform(name);
+        glUniform1i(uniforms.get(name), (value) ? 1 : 0);
     }
 
     public void setInt(String name, int value) {
         bind();
-        glUniform1i(GL20.glGetUniformLocation(programID, name), value);
+        if (!uniforms.containsKey(name)) createUniform(name);
+        glUniform1i(uniforms.get(name), value);
     }
 
     public void setFloat(String name, float value) {
         bind();
-        glUniform1f(GL20.glGetUniformLocation(programID, name), value);
+        if (!uniforms.containsKey(name)) createUniform(name);
+        glUniform1f(uniforms.get(name), value);
     }
 
     public void setMatrix4f(String name, FloatBuffer buffer) {
         bind();
-        glUniformMatrix4fv(GL20.glGetUniformLocation(programID, name), false, buffer);
+        if (!uniforms.containsKey(name)) createUniform(name);
+        glUniformMatrix4fv(uniforms.get(name), false, buffer);
     }
 
     public void setMatrix4f(String name, Matrix4f matrix) {
         FloatBuffer buffer = BufferUtil.storeDataInFloatBuffer(matrix);
 
         bind();
-        glUniformMatrix4fv(GL20.glGetUniformLocation(programID, name), false, buffer);
+        if (!uniforms.containsKey(name)) createUniform(name);
+        glUniformMatrix4fv(uniforms.get(name), false, buffer);
 
         BufferUtil.freeMemory(buffer);
     }
 
     public void setVec3(String name, float v, float v1, float v2) {
         bind();
-        glUniform3f(GL20.glGetUniformLocation(programID, name), v, v1, v2);
+        if (!uniforms.containsKey(name)) createUniform(name);
+        glUniform3f(uniforms.get(name), v, v1, v2);
     }
 
     public void setVec3(String name, Vector3f v) {
         bind();
-        glUniform3f(GL20.glGetUniformLocation(programID, name), v.x, v.y, v.z);
+        if (!uniforms.containsKey(name)) createUniform(name);
+        glUniform3f(uniforms.get(name), v.x, v.y, v.z);
     }
 
     public void setVec4(String name, Vector4f v) {
         bind();
-        glUniform4f(GL20.glGetUniformLocation(programID, name), v.x, v.y, v.z, v.w);
+        if (!uniforms.containsKey(name)) createUniform(name);
+        glUniform4f(uniforms.get(name), v.x, v.y, v.z, v.w);
     }
     public void setVec4(String name, float v, float v1, float v2, float v3) {
         bind();
-        glUniform4f(GL20.glGetUniformLocation(programID, name), v, v1, v2, v3);
+        if (!uniforms.containsKey(name)) createUniform(name);
+        glUniform4f(uniforms.get(name), v, v1, v2, v3);
     }
 
     public void bind() {

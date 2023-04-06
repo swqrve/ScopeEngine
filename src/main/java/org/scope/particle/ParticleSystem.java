@@ -11,7 +11,7 @@ import org.lwjgl.system.MemoryUtil;
 import org.scope.ScopeEngine;
 import org.scope.camera.Camera;
 import org.scope.logger.Debug;
-import org.scope.manager.ModelManager;
+import org.scope.render.ModelManager;
 import org.scope.render.ShaderProgram;
 import org.scope.render.type.Quad;
 import org.scope.util.MathUtil;
@@ -41,6 +41,8 @@ public class ParticleSystem {
     private final Matrix4f[] matrices;
     private final Vector4f[] colors;
     private final FloatBuffer dataBuffer;
+
+    private Matrix4f currentCameraMatrix;
 
 
     public ParticleSystem(ShaderProgram shader, ParticleSetting setting, int particlePoolSize) {
@@ -89,7 +91,8 @@ public class ParticleSystem {
         shader.setBool("isAParticle", true);
         shader.setBool("usesLighting", false);
 
-        shader.setMatrix4f("view", camera.getViewMatrix());
+        currentCameraMatrix = camera.getViewMatrix();
+        shader.setMatrix4f("view", currentCameraMatrix);
 
         particleSettings.getMaterial().setUniforms(shader, "material");
 
@@ -104,8 +107,8 @@ public class ParticleSystem {
             if (particle.isShrinking()) sizeScale = (MathUtil.lerp(particle.getEndSize(), particle.getStartSize(), particle.getLifePercentageLived()));
 
             matrices[index].identity().translate(particle.getPosition());
-            if (particle.isBillboard()) camera.getViewMatrix().transpose3x3(matrices[index]);
-            matrices[index].rotateX(particle.getRotation()).scale(sizeScale);
+            if (particle.isBillboard()) currentCameraMatrix.transpose3x3(matrices[index]);
+            matrices[index].scale(sizeScale); // TODO: Add back rotate eventually, it was taking a 6% total run time though
 
             index++;
         }

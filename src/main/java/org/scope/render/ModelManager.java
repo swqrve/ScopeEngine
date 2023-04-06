@@ -1,7 +1,6 @@
-package org.scope.manager;
+package org.scope.render;
 
 import lombok.Getter;
-import org.scope.ScopeEngine;
 import org.scope.logger.Debug;
 import org.scope.render.struct.Model;
 

@@ -5,9 +5,9 @@ import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 import org.scope.camera.Camera;
-import org.scope.render.struct.Model;
 import org.scope.render.ShaderProgram;
 import org.scope.render.Texture;
+import org.scope.render.struct.Model;
 import org.scope.util.BufferUtil;
 
 import java.nio.FloatBuffer;
@@ -63,8 +63,6 @@ public class Quad extends Model {
     public void render(Camera camera, ShaderProgram shader) {
         shader.bind();
 
-        shader.setMatrix4f("view", camera.getViewMatrix());
-
         bindVAO();
         GL11.glDrawElements(GL11.GL_TRIANGLES, 6, GL11.GL_UNSIGNED_INT, 0);
     }
@@ -73,8 +71,6 @@ public class Quad extends Model {
     public void render(Camera camera, ShaderProgram shader, Texture texture) {
         shader.bind();
         texture.bind();
-
-        shader.setMatrix4f("view", camera.getViewMatrix());
 
         bindVAO();
         GL11.glDrawElements(GL11.GL_TRIANGLES, 6, GL11.GL_UNSIGNED_INT, 0);

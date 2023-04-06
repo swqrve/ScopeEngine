@@ -6,8 +6,7 @@ import org.joml.Math;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.scope.ScopeEngine;
-import org.scope.logger.Debug;
-import org.scope.manager.InputManager;
+import org.scope.input.InputManager;
 import org.scope.util.ConstManager;
 
 public abstract class Camera {
@@ -25,6 +24,9 @@ public abstract class Camera {
     @Getter @Setter private float yaw = -90.0f;
     @Getter @Setter private float pitch = 0.0f;
 
+    private final Matrix4f cameraMatrix = new Matrix4f();
+    private final Vector3f incrementVector = new Vector3f();
+
     public Camera(Vector3f cameraPosition, float fov) {
         this.cameraPosition = cameraPosition;
         this.fov = fov;
@@ -38,7 +40,7 @@ public abstract class Camera {
     public abstract void input(InputManager input, double delta);
 
     public void updateCameraProjection() {
-        cameraProjection = new Matrix4f().identity().perspective(Math.toRadians(fov), (float) ScopeEngine.getInstance().getEngineManager().getWindowManager().getWidth() / (float) ScopeEngine.getInstance().getEngineManager().getWindowManager().getHeight(), (Float) ConstManager.getConstant("zNear"), (Float) ConstManager.getConstant("zFar"));
+        cameraProjection.identity().perspective(Math.toRadians(fov), (float) ScopeEngine.getInstance().getEngineManager().getWindowManager().getWidth() / (float) ScopeEngine.getInstance().getEngineManager().getWindowManager().getHeight(), (Float) ConstManager.getConstant("zNear"), (Float) ConstManager.getConstant("zFar"));
     }
 
     public void setFov(float fov) {
@@ -53,12 +55,12 @@ public abstract class Camera {
     }
 
     public Matrix4f getViewMatrix() {
-        direction.x = (float) (Math.cos(Math.toRadians(yaw)) * Math.cos(Math.toRadians(pitch)));
-        direction.y = (float) Math.sin(Math.toRadians(pitch));
-        direction.z = (float) (Math.sin(Math.toRadians(yaw)) * Math.cos(Math.toRadians(pitch)));
+        direction.x = Math.cos(Math.toRadians(yaw)) * Math.cos(Math.toRadians(pitch));
+        direction.y = Math.sin(Math.toRadians(pitch));
+        direction.z = Math.sin(Math.toRadians(yaw)) * Math.cos(Math.toRadians(pitch));
         cameraFront = direction.normalize();
 
-        return new Matrix4f().identity().lookAt(cameraPosition, new Vector3f(cameraPosition).add(cameraFront), cameraUp);
+        return cameraMatrix.identity().lookAt(cameraPosition, incrementVector.set(cameraPosition).add(cameraFront), cameraUp);
     }
 
 }

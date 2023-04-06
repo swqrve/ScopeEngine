@@ -1,4 +1,4 @@
-package org.scope.manager;
+package org.scope.window;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -17,7 +17,6 @@ import java.nio.IntBuffer;
 
 import static java.sql.Types.NULL;
 import static org.lwjgl.glfw.GLFW.*;
-import static org.lwjgl.glfw.GLFW.GLFW_RELEASE;
 import static org.lwjgl.opengl.GL11.*;
 
 public class WindowManager implements Cleanable {

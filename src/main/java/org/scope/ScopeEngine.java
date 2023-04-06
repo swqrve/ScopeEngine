@@ -1,7 +1,7 @@
 package org.scope;
 
 import lombok.Getter;
-import org.scope.manager.EngineManager;
+import org.scope.engine.EngineManager;
 import org.scope.logger.Debug;
 import org.scope.scene.Scene;
 import org.scope.util.ConstManager;

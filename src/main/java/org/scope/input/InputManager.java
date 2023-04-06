@@ -1,10 +1,9 @@
-package org.scope.manager;
+package org.scope.input;
 
 import lombok.Getter;
 import org.joml.Vector2d;
 import org.joml.Vector2f;
 import org.lwjgl.glfw.GLFW;
-import org.lwjgl.opengl.GL20;
 import org.scope.ScopeEngine;
 
 public class InputManager {

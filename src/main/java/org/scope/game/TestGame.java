@@ -7,30 +7,28 @@ import org.lwjgl.glfw.GLFW;
 import org.scope.ScopeEngine;
 import org.scope.camera.Camera;
 import org.scope.camera.type.FreeFlyCamera;
-import org.scope.collisions.Raycast;
 import org.scope.collisions.coliders.AABB;
+import org.scope.input.InputManager;
+import org.scope.light.LightManager;
 import org.scope.light.types.DirectionalLight;
 import org.scope.light.types.PointLight;
 import org.scope.light.types.SpotLight;
-import org.scope.manager.InputManager;
-import org.scope.manager.LightManager;
 import org.scope.particle.ParticleSetting;
 import org.scope.particle.ParticleSystem;
-import org.scope.render.struct.Material;
 import org.scope.render.ShaderProgram;
 import org.scope.render.Texture;
+import org.scope.render.struct.Material;
 import org.scope.render.type.Cube;
 import org.scope.render.type.Quad;
 import org.scope.render.type.SkyBox;
 import org.scope.scene.Scene;
+import org.scope.sound.SoundManager;
+import org.scope.sound.type.SoundBuffer;
+import org.scope.sound.type.SoundSource;
 import org.scope.util.FileUtil;
 
-
-import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL11C.GL_FILL;
-import static org.lwjgl.opengl.GL11C.GL_FRONT_AND_BACK;
-import static org.lwjgl.opengl.GL11C.GL_LINE;
-import static org.lwjgl.opengl.GL11C.GL_LINES;
+import static org.lwjgl.opengl.GL11.glPolygonMode;
+import static org.lwjgl.opengl.GL11C.*;
 
 public class TestGame implements Scene {
     private FreeFlyCamera camera;
@@ -55,6 +53,8 @@ public class TestGame implements Scene {
     private final ParticleSystem[] system = new ParticleSystem[2];
 
     private final AABB collider = new AABB(new Vector3f(3.5f, 3.5f, 3.5f), new Vector3f(1.0f, 1.0f, 1.0f), true);
+
+    private SoundSource source;
 
     @Override
     public void init() {
@@ -143,8 +143,23 @@ public class TestGame implements Scene {
 
 
         system[1] = new ParticleSystem(defaultShader, setting,15);
-    }
 
+        source = new SoundSource("song") // TODO: Make soundbuffer source files non absolute file paths
+                .setBuffer(new SoundBuffer("D:\\GameEngine\\ScopeEngine\\src\\main\\resources\\sounds\\comedy-Tricker.ogg").getBufferID())
+                .setGain(0.10f)
+                .setLoops(true)
+                .setIsRelative(true)
+                .setPosition(0.0f, 0.0f, 0.0f)
+                .setState(SoundSource.SoundState.PLAY);
+
+        source = new SoundSource("creak")
+                .setBuffer(new SoundBuffer("D:\\GameEngine\\ScopeEngine\\src\\main\\resources\\sounds\\creak.ogg").getBufferID())
+                .setGain(0.10f)
+                .setLoops(false)
+                .setIsRelative(false)
+                .setPosition(particleBasePosition);
+
+    }
 
 
     long startTime = System.currentTimeMillis();
@@ -153,7 +168,7 @@ public class TestGame implements Scene {
     public void update(double deltaTime) {
         if ((System.currentTimeMillis() - startTime) > 3000.0f) {
             startTime = System.currentTimeMillis();
-            lightColor.set(new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat());
+            lightColor.set(ScopeEngine.getInstance().getRandom().nextFloat(), ScopeEngine.getInstance().getRandom().nextFloat(), ScopeEngine.getInstance().getRandom().nextFloat());
             lightManager.getPointLights()[0].setUniforms(defaultShader, "pointLight[0]");
         }
 
@@ -183,19 +198,21 @@ public class TestGame implements Scene {
         system[0].update(deltaTime);
         system[1].update(deltaTime);
 
-        if (collider.contains(camera.getCameraPosition())) System.out.println("Colliding!");
-        if (Raycast.intersectsAABB(camera.getCameraPosition(), camera.getDirection(), collider)) System.out.println("Stop looking at it!");
+        SoundManager.getInstance().updateListener();
     }
 
     @Override
     public void render() {
+        defaultShader.setMatrix4f("view", camera.getViewMatrix());
         defaultShader.setMatrix4f("projection", camera.getCameraProjection());
         defaultShader.setBool("isAParticle", false);
 
+/*
         modelMatrix.identity().translate(collider.getCenter()).scale(0.5f);
         defaultShader.setMatrix4f("model", modelMatrix);
         defaultShader.setBool("usesLighting", false);
         cube.render(camera, defaultShader, senkuTexture);
+*/
 
         // Render cube at 1.0f 0.0f 0.0f scaled 2x
         /* modelMatrix.identity().translate(1.0f, 0.0f, 0.0f).scale(2.0f);
@@ -254,8 +271,11 @@ public class TestGame implements Scene {
             system[0].emitParticle();
             system[1].emitParticle();
 
+            SoundManager.getInstance().getSoundSource("creak").setState(SoundSource.SoundState.PLAY);
+
             lastCreated = System.currentTimeMillis();
         }
+
 
         if (input.isKeyPressed(GLFW.GLFW_KEY_SPACE) && System.currentTimeMillis() - lastCreated >= 3000f) {
             lightManager.addLight(new PointLight(lightColor, new Vector3f(camera.getCameraPosition()), 1.0f));

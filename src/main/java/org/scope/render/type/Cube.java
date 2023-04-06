@@ -9,7 +9,7 @@ import org.scope.util.BufferUtil;
 
 import java.nio.FloatBuffer;
 
-import static org.lwjgl.opengl.GL15C.*;
+import static org.lwjgl.opengl.GL15C.glDeleteBuffers;
 import static org.lwjgl.opengl.GL30C.glDeleteVertexArrays;
 
 public class Cube extends Model {

@@ -1,9 +1,9 @@
 package org.scope.game.util;
 
-import org.scope.logger.Debug;
-import org.scope.util.Platform;
 import org.scope.game.TestGame;
+import org.scope.logger.Debug;
 import org.scope.util.EnginePreferences;
+import org.scope.util.Platform;
 import org.scope.util.ScopeLauncher;
 
 public class Launcher {

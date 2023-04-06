@@ -1,6 +1,5 @@
 package org.scope.light.types;
 
-import com.sun.javafx.scene.traversal.Direction;
 import lombok.Getter;
 import lombok.Setter;
 import org.joml.Vector3f;

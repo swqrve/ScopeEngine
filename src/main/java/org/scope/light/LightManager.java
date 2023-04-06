@@ -1,10 +1,8 @@
-package org.scope.manager;
+package org.scope.light;
 
-import com.sun.prism.ps.Shader;
 import lombok.Getter;
 import lombok.Setter;
 import org.joml.Vector3f;
-import org.scope.light.Light;
 import org.scope.light.types.DirectionalLight;
 import org.scope.light.types.PointLight;
 import org.scope.light.types.SpotLight;

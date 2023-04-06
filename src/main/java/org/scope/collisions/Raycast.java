@@ -68,8 +68,6 @@ public class Raycast {
         float tEntry = Math.max(Math.max(tMinX, tMinY), tMinZ);
         float tExit = Math.min(Math.min(tMaxX, tMaxY), tMaxZ);
 
-        if (tEntry > tExit || tExit < 0) return false;
-
-        return true;
+        return !(tEntry > tExit) && !(tExit < 0);
     }
 }

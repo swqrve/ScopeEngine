@@ -4,7 +4,6 @@ import lombok.Getter;
 import lombok.Setter;
 import org.joml.Vector3f;
 import org.scope.framework.UniformConstructor;
-import org.scope.light.types.DirectionalLight;
 import org.scope.render.ShaderProgram;
 
 public abstract class Light implements UniformConstructor {

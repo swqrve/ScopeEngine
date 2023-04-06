@@ -5,7 +5,7 @@ import lombok.Setter;
 import org.joml.Vector3f;
 import org.scope.ScopeEngine;
 import org.scope.camera.Camera;
-import org.scope.manager.InputManager;
+import org.scope.input.InputManager;
 
 import static org.lwjgl.glfw.GLFW.*;
 
@@ -17,6 +17,11 @@ public class FreeFlyCamera extends Camera {
     @Getter @Setter private float lastY;
 
     @Getter @Setter private float sensitivity = 0.10f; // TODO: Add to constructor
+
+    @Getter private final Vector3f incrementVector = new Vector3f();
+
+    private float xOffSet;
+    private float yOffSet;
 
     public FreeFlyCamera(float x, float y, float z, float fov) {
         super(x, y, z, fov);
@@ -33,8 +38,8 @@ public class FreeFlyCamera extends Camera {
                 firstMouse = false;
             }
 
-            float xOffSet = (float) (x - getLastX());
-            float yOffSet = (float) (getLastY() - y);
+            xOffSet = (float) (x - getLastX());
+            yOffSet = (float) (getLastY() - y);
 
             setLastX((float) x);
             setLastY((float) y);
@@ -53,9 +58,9 @@ public class FreeFlyCamera extends Camera {
     public void input(InputManager input, double delta) {
         float cameraSpeed = (float) (1.5f * delta);
 
-        if (input.isKeyPressed(GLFW_KEY_W)) getCameraPosition().add(new Vector3f(getCameraFront()).mul(cameraSpeed));
-        if (input.isKeyPressed(GLFW_KEY_S)) getCameraPosition().sub(new Vector3f(getCameraFront()).mul(cameraSpeed));
-        if (input.isKeyPressed(GLFW_KEY_A)) getCameraPosition().sub(new Vector3f(getCameraFront()).cross(new Vector3f(getCameraUp())).normalize().mul(cameraSpeed));
-        if (input.isKeyPressed(GLFW_KEY_D)) getCameraPosition().add(new Vector3f(getCameraFront()).cross(new Vector3f(getCameraUp())).normalize().mul(cameraSpeed));
+        if (input.isKeyPressed(GLFW_KEY_W)) getCameraPosition().add(incrementVector.set(getCameraFront()).mul(cameraSpeed));
+        if (input.isKeyPressed(GLFW_KEY_S)) getCameraPosition().sub(incrementVector.set(getCameraFront()).mul(cameraSpeed));
+        if (input.isKeyPressed(GLFW_KEY_A)) getCameraPosition().sub(incrementVector.set(getCameraFront()).cross(getCameraUp()).normalize().mul(cameraSpeed));
+        if (input.isKeyPressed(GLFW_KEY_D)) getCameraPosition().add(incrementVector.set(getCameraFront()).cross(getCameraUp()).normalize().mul(cameraSpeed));
     }
 }

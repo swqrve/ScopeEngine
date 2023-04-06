@@ -1,4 +1,4 @@
-package org.scope.manager;
+package org.scope.engine;
 
 import lombok.Getter;
 import org.lwjgl.glfw.GLFW;
@@ -6,15 +6,19 @@ import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.opengl.GL11;
 import org.scope.ScopeEngine;
 import org.scope.camera.Camera;
+import org.scope.input.InputManager;
 import org.scope.logger.Debug;
 import org.scope.render.Texture;
+import org.scope.sound.SoundManager;
 import org.scope.util.ConstManager;
 import org.scope.util.EnginePreferences;
+import org.scope.window.WindowManager;
 
 public class EngineManager {
 
     @Getter private WindowManager windowManager;
     @Getter private InputManager inputManager;
+    @Getter private SoundManager soundManager;
 
     @Getter private boolean running;
 
@@ -27,7 +31,7 @@ public class EngineManager {
         ConstManager.createConstant("zNear", 0.1f);
         ConstManager.createConstant("zFar", 100.0f);
         ConstManager.createConstant("Nanosecond", 1000000000D);
-        ConstManager.createConstant("FrameRate", 10000.0f);
+        ConstManager.createConstant("FrameRate", 5000.0f);
 
         frameTime = 1.0f / (float) ConstManager.getConstant("FrameRate");
     }
@@ -39,11 +43,14 @@ public class EngineManager {
         windowManager = new WindowManager(preferences.getWidth(), preferences.getHeight(), preferences.getTitle(), preferences.isResizable());
         windowManager.init(); // The window is already visible once this runs!
 
-        // Initialize our "null" texture or "error" texture
-        Texture.setErrorTexture(new Texture("textures/error.png"));
-
         inputManager = new InputManager();
         inputManager.init();
+
+        soundManager = new SoundManager();
+        soundManager.init(null); // TODO: Grab default sound device options from preferences
+
+        // Initialize our "null" texture or "error" texture
+        Texture.setErrorTexture(new Texture("textures/error.png"));
 
         ScopeEngine.getInstance().getCurrentScene().init();
 
@@ -66,6 +73,8 @@ public class EngineManager {
         long lastTime = System.nanoTime();
         double unprocessedTime = 0;
 
+        double nano = (double) ConstManager.getConstant("Nanosecond");
+
         while (running) {
             boolean render = false;
 
@@ -73,11 +82,10 @@ public class EngineManager {
             long passedTime = startTime - lastTime;
             lastTime = startTime;
 
-            unprocessedTime += passedTime / (double) ConstManager.getConstant("Nanosecond");
+            unprocessedTime += passedTime / nano;
             frameCounter += passedTime;
 
-            double deltaTime = passedTime / (double) ConstManager.getConstant("Nanosecond");
-            input(deltaTime);
+            double deltaTime = passedTime / nano;
 
             while (unprocessedTime > frameTime) {
                 render = true;
@@ -85,7 +93,7 @@ public class EngineManager {
 
                 if (GLFW.glfwWindowShouldClose(windowManager.getWindowID())) setRunning(false);
 
-                if (frameCounter >= (double) ConstManager.getConstant("Nanosecond")) {
+                if (frameCounter >= nano) {
                     fps = frames;
                     windowManager.setTitle("ScopeEngine FPS: " + getFps());
                     frames = 0;
@@ -131,6 +139,7 @@ public class EngineManager {
     public void cleanup() {
         // Call the cleanup on the current scene, windows, input, anything that needs cleaning
         windowManager.cleanup();
+        soundManager.cleanup();
         errorCallback.free();
         GLFW.glfwTerminate();
     }
