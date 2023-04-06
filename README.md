@@ -8,7 +8,7 @@ It is being created with LWJGL.
 
 This project is mainly a framework and not a game engine so it doesn't really have many of the features that you'd expect from an engine. Furthermore, it is being made with a very specific style of game in mind. Specifically 2.5D games. It is meant for games like Wolfenstien 3D with a modern twist, which is why it currently doesn't have any form of model loader (Though a OBJ loader will be added soon). Think of games like *Delver* if you'd like to understand the intentions a bit more.
 
-It is in a fairly limited state. Currently it supports creating your own models when providing a list of vertices, basic lighting (Point lights, Spot lights, Directional Light), textures, shaders, cameras, skyboxs, particles, etc. This is still the very early state. As of right now, a solid understanding of opengl is necessary to make use of the framework, though this will likely remain the case for any game of even slightly substantial portion. Further below is a preview of just a couple of those mentioned features.
+It is in a fairly limited state. Currently it supports creating your own models when providing a list of vertices, basic lighting (Point lights, Spot lights, Directional Light), textures, shaders, cameras, skyboxs, particles, collision detection, raycasting, 3D audio, etc. This is still the very early state. As of right now, a solid understanding of opengl is necessary to make use of the framework, though this will likely remain the case for any game of even slightly substantial portion. Further below is a preview of just a couple of those mentioned features.
 
 ## Usage
 
@@ -49,14 +49,32 @@ If you'd like to check out how to use it check out the game package. It is a bit
 
         ParticleSystem system = new ParticleSystem(defaultShader, setting,202);
 ```
+
+*3D Audio Current Version*
+```
+source = new SoundSource("song") // TODO: Make soundbuffer source files non absolute file paths
+                .setBuffer(new SoundBuffer("sounds/comedy-Tricker.ogg").getBufferID())
+                .setGain(0.10f)
+                .setLoops(true)
+                .setIsRelative(true) // Disables the 3D Audio Aspect!
+                .setState(SoundSource.SoundState.PLAY);
+
+        source = new SoundSource("creak")
+                .setBuffer(new SoundBuffer("sounds/creak.ogg").getBufferID())
+                .setGain(0.10f)
+                .setLoops(false)
+                .setIsRelative(false)
+                .setPosition(particleBasePosition);
+```
+
 ## Future Features:
 All the following or almost all the following are expected in the next month in order to be ready for Ludum Dare in time. They will get checkmarks as they get completed.
 
 ```
 -Particle System (Version 1 Implemented) ✔️
--AABB Collision Detection (Basic Version implemented / Not Entirely decided on how I want to use it) ✔️
--Raycasting (Basic Version implemented) ✔️
--3D Audio
--Text Rendering
+-AABB Collision Detection (Limited Version Implemented *Not Entirely decided on how I want to do things*) ✔️
+-Raycasting (Version 1 Implemented) ✔️
+-3D Audio (Limited Version Implemented *Still uses absolute paths*) ✔️
+-Text Rendering ❌
 ```
 There are plans for documentation in the future when it has more features to document..
