@@ -2,6 +2,7 @@ package org.scope.sound;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.SneakyThrows;
 import org.lwjgl.openal.AL;
 import org.lwjgl.openal.ALC;
 import org.lwjgl.openal.ALCCapabilities;
@@ -19,6 +20,7 @@ import org.scope.sound.type.SoundSource;
 
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -123,10 +125,14 @@ public class SoundManager implements Cleanable {
         listener.updateListener(Camera.getCurrentCamera());
     }
 
+    @SneakyThrows
     public static ShortBuffer readVorbis(String filePath, STBVorbisInfo info) {
+        if (filePath.charAt(0) != '/') filePath = "/" + filePath;
+        System.out.println(Paths.get(SoundManager.class.getResource(filePath).toURI()).toFile().getAbsolutePath().replaceAll("/", "\\"));
+
         try (MemoryStack stack = MemoryStack.stackPush()) {
             IntBuffer error = stack.mallocInt(1);
-            long decoder = stb_vorbis_open_filename(filePath, error, null);
+            long decoder = stb_vorbis_open_filename(Paths.get(SoundManager.class.getResource(filePath).toURI()).toFile().getAbsolutePath().replaceAll("/", "\\"), error, null);
             if (decoder == NULL) {
                 Debug.log(Debug.LogLevel.ERROR, "Failed to open Ogg Vorbis file. Error: " + error.get(0));
                 ScopeEngine.getInstance().end();

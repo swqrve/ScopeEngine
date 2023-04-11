@@ -145,7 +145,7 @@ public class TestGame implements Scene {
         system[1] = new ParticleSystem(defaultShader, setting,15);
 
         source = new SoundSource("song") // TODO: Make soundbuffer source files non absolute file paths
-                .setBuffer(new SoundBuffer("D:\\GameEngine\\ScopeEngine\\src\\main\\resources\\sounds\\comedy-Tricker.ogg").getBufferID())
+                .setBuffer(new SoundBuffer("sounds/comedy-Tricker.ogg").getBufferID())
                 .setGain(0.10f)
                 .setLoops(true)
                 .setIsRelative(true)
@@ -153,7 +153,7 @@ public class TestGame implements Scene {
                 .setState(SoundSource.SoundState.PLAY);
 
         source = new SoundSource("creak")
-                .setBuffer(new SoundBuffer("D:\\GameEngine\\ScopeEngine\\src\\main\\resources\\sounds\\creak.ogg").getBufferID())
+                .setBuffer(new SoundBuffer("sounds/creak.ogg").getBufferID())
                 .setGain(0.10f)
                 .setLoops(false)
                 .setIsRelative(false)
@@ -294,6 +294,8 @@ public class TestGame implements Scene {
 
     @Override
     public void cleanup() { // TODO: Fix weird java memory violation crash error going on in one of the cleanups?
+        ScopeEngine.getInstance().cleanup(); // This should be ran on the last scene
+
 /*
         lightAffectedObjectShader.cleanup();
         defaultShader.cleanup();
