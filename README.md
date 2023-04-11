@@ -72,9 +72,10 @@ All the following or almost all the following are expected in the next month in 
 
 ```
 -Particle System (Version 1 Implemented) ✔️
--AABB Collision Detection (Limited Version Implemented *Not Entirely decided on how I want to do things*) ✔️
+-AABB Collision Detection (Limited Version Implemented) ✔️
 -Raycasting (Version 1 Implemented) ✔️
--3D Audio (Limited Version Implemented *Still uses absolute paths*) ✔️
+-3D Audio (Version 1 Implemented) ✔️
 -Text Rendering ❌
 ```
+
 There are plans for documentation in the future when it has more features to document..
