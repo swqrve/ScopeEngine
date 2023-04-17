@@ -12,7 +12,7 @@ It is in a fairly limited state. Currently it supports creating your own models 
 
 ## Usage
 
-If you'd like to check out how to use it check out the game package. It is a bit finicky now and I'm aware of a couple bad design choices that I will be improving in the coming weeks, and I will likely abstract SOME more of the code. I prefer to leave as much control as possible to the game however.
+If you'd like to check out how to use it check out the game package. BEWARE, it is my playground for testing and creating features, so some fully implemented features are removed while other new/minimally tested features are present! It is a bit finicky now and I'm aware of a couple bad design choices that I will be improving in the coming weeks, and I will likely abstract SOME more of the code. I prefer to leave as much control as possible to the game however.
 
 ## Preview
 ![image](https://user-images.githubusercontent.com/59324927/229053567-c51ba313-8e9b-48d5-82eb-7fabb9ee83b3.png)
