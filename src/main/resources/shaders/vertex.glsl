@@ -26,7 +26,7 @@ layout (std430, binding = 0) buffer ParticleSSBO {
     Particle particles[];
 };
 
-void main() { // REFACTOR TO CLEAN UP LATER
+void main() {
     isParticle = isAParticle;
     if (isParticle == 1) {
         particleColor = particles[gl_InstanceID].color;

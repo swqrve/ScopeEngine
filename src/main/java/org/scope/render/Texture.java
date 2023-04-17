@@ -33,7 +33,7 @@ public class Texture {
         STBImage.stbi_set_flip_vertically_on_load(true); // TODO: Add this to the constructor if necessary
 
         ByteBuffer data = null;
-        if (Texture.class.getClassLoader().getResource(fileName) != null) data = stbi_load(Texture.class.getClassLoader().getResource(fileName).getPath().substring(1), width, height, nrChannels, 0);
+        if (Texture.class.getClassLoader().getResource(fileName) != null) data = stbi_load(Texture.class.getClassLoader().getResource(fileName).getPath().replaceAll("file:", "").replaceAll("!", "").substring(1), width, height, nrChannels, 0);
 
         if (data == null) {
             Debug.log(Debug.LogLevel.ERROR, "Failed to load texture " + fileName + "... Will return a miscellaneous texture instead.", true);

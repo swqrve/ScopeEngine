@@ -18,6 +18,7 @@ import org.scope.sound.type.SoundBuffer;
 import org.scope.sound.type.SoundListener;
 import org.scope.sound.type.SoundSource;
 
+import java.nio.Buffer;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
 import java.nio.file.Paths;
@@ -128,7 +129,6 @@ public class SoundManager implements Cleanable {
     @SneakyThrows
     public static ShortBuffer readVorbis(String filePath, STBVorbisInfo info) {
         if (filePath.charAt(0) != '/') filePath = "/" + filePath;
-        System.out.println(Paths.get(SoundManager.class.getResource(filePath).toURI()).toFile().getAbsolutePath().replaceAll("/", "\\"));
 
         try (MemoryStack stack = MemoryStack.stackPush()) {
             IntBuffer error = stack.mallocInt(1);
@@ -146,7 +146,7 @@ public class SoundManager implements Cleanable {
 
             ShortBuffer result = MemoryUtil.memAllocShort(lengthSamples * channels);
 
-            result.limit(stb_vorbis_get_samples_short_interleaved(decoder, channels, result) * channels);
+            ((Buffer) result).limit(stb_vorbis_get_samples_short_interleaved(decoder, channels, result) * channels);
             stb_vorbis_close(decoder);
 
             return result;

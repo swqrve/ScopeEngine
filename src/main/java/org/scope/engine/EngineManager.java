@@ -9,10 +9,14 @@ import org.scope.camera.Camera;
 import org.scope.input.InputManager;
 import org.scope.logger.Debug;
 import org.scope.render.Texture;
+import org.scope.render.text.TextManager;
 import org.scope.sound.SoundManager;
 import org.scope.util.ConstManager;
 import org.scope.util.EnginePreferences;
 import org.scope.window.WindowManager;
+
+import static org.lwjgl.opengl.GL30C.glBindVertexArray;
+import static org.lwjgl.opengl.GL30C.glGenVertexArrays;
 
 public class EngineManager {
 
@@ -48,6 +52,8 @@ public class EngineManager {
 
         soundManager = new SoundManager();
         soundManager.init(null); // TODO: Grab default sound device options from preferences
+
+        new TextManager();
 
         // Initialize our "null" texture or "error" texture
         Texture.setErrorTexture(new Texture("textures/error.png"));
@@ -138,9 +144,9 @@ public class EngineManager {
 
     public void cleanup() {
         // Call the cleanup on the current scene, windows, input, anything that needs cleaning
-        windowManager.cleanup();
         soundManager.cleanup();
         errorCallback.free();
+        windowManager.cleanup();
         GLFW.glfwTerminate();
     }
 }

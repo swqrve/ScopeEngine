@@ -18,6 +18,8 @@ import org.scope.particle.ParticleSystem;
 import org.scope.render.ShaderProgram;
 import org.scope.render.Texture;
 import org.scope.render.struct.Material;
+import org.scope.render.text.TextManager;
+import org.scope.render.text.type.TextSource;
 import org.scope.render.type.Cube;
 import org.scope.render.type.Quad;
 import org.scope.render.type.SkyBox;
@@ -38,6 +40,7 @@ public class TestGame implements Scene {
     private SkyBox skybox;
 
     private ShaderProgram defaultShader;
+    private ShaderProgram textShader;
 
     private Texture senkuTexture;
     private Texture lampTexture;
@@ -56,6 +59,8 @@ public class TestGame implements Scene {
 
     private SoundSource source;
 
+    private TextSource textSource;
+
     @Override
     public void init() {
         // CREATE A CAMERA AND SET IT AS THE DEFAULT CAMERA
@@ -69,6 +74,8 @@ public class TestGame implements Scene {
         // CREATE THE TWO SHADERS
         defaultShader = new ShaderProgram(FileUtil.loadResource("shaders/vertex.glsl"), FileUtil.loadResource("shaders/fragment.glsl"));
         ShaderProgram skyBoxShader = new ShaderProgram(FileUtil.loadResource("shaders/skybox/skyboxvertex.glsl"), FileUtil.loadResource("shaders/skybox/skyboxfragment.glsl"));
+        textShader = new ShaderProgram(FileUtil.loadResource("shaders/ui/textvertex.glsl"), FileUtil.loadResource("shaders/ui/textfragment.glsl"));
+
 
         // CREATE SKYBOX MODEL/OBJECT
         skybox = new SkyBox(skyBoxShader, "textures/skybox");
@@ -159,6 +166,8 @@ public class TestGame implements Scene {
                 .setIsRelative(false)
                 .setPosition(particleBasePosition);
 
+        TextManager.getInstance().setCurrentCamera(camera);
+        textSource = new TextSource("arial", "fonts/arial.ttf", 0, 48);
     }
 
 
@@ -254,10 +263,16 @@ public class TestGame implements Scene {
         system[0].render();
         system[1].render();
 
-
         // Render skybox
         skybox.render(camera);
+
+        // UI Elements rendered last! Current Text Rendering Method is insanely expensive
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        textSource.renderText(textShader, "FPS: " + ScopeEngine.getInstance().getEngineManager().getFps(), 0.0f, 600.0f - 25.0f, 0.5f, 0.0f, 0.0f, 0.0f);
+        glDisable(GL_BLEND);
     }
+
 
 
     long lastCreated = System.currentTimeMillis();
@@ -294,8 +309,6 @@ public class TestGame implements Scene {
 
     @Override
     public void cleanup() { // TODO: Fix weird java memory violation crash error going on in one of the cleanups?
-        ScopeEngine.getInstance().cleanup(); // This should be ran on the last scene
-
 /*
         lightAffectedObjectShader.cleanup();
         defaultShader.cleanup();
@@ -305,5 +318,7 @@ public class TestGame implements Scene {
         cube.cleanup();
         skybox.cleanup();
 */
+
+        // ScopeEngine.getInstance().cleanup(); // This should be ran on the last scene
     }
 }

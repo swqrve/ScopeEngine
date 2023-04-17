@@ -14,7 +14,9 @@ public abstract class Camera {
     @Getter @Setter private static Camera currentCamera;
     @Getter private static final Vector3f cameraUp = new Vector3f(0.0f, 1.0f, 0.0f);
     @Getter private final Vector3f cameraPosition;
-    @Getter private Matrix4f cameraProjection;
+
+    @Getter private final Matrix4f cameraProjection;
+    @Getter private final Matrix4f cameraUIProjection;
 
     @Getter private Vector3f cameraFront = new Vector3f(0.0f, 0.0f, -1.0f);
     @Getter private final Vector3f direction = new Vector3f();
@@ -31,6 +33,7 @@ public abstract class Camera {
         this.cameraPosition = cameraPosition;
         this.fov = fov;
         cameraProjection = new Matrix4f().identity().perspective(Math.toRadians(fov), (float) ScopeEngine.getInstance().getEngineManager().getWindowManager().getWidth() / (float) ScopeEngine.getInstance().getEngineManager().getWindowManager().getHeight(), (Float) ConstManager.getConstant("zNear"), (Float) ConstManager.getConstant("zFar"));
+        cameraUIProjection = new Matrix4f().ortho2D(0.0f, ScopeEngine.getInstance().getEngineManager().getWindowManager().getWidth(), 0.0f, ScopeEngine.getInstance().getEngineManager().getWindowManager().getHeight());
     }
 
     public Camera(float x, float y, float z, float fov) {
@@ -41,6 +44,7 @@ public abstract class Camera {
 
     public void updateCameraProjection() {
         cameraProjection.identity().perspective(Math.toRadians(fov), (float) ScopeEngine.getInstance().getEngineManager().getWindowManager().getWidth() / (float) ScopeEngine.getInstance().getEngineManager().getWindowManager().getHeight(), (Float) ConstManager.getConstant("zNear"), (Float) ConstManager.getConstant("zFar"));
+        cameraUIProjection.identity().ortho2D(0.0f, ScopeEngine.getInstance().getEngineManager().getWindowManager().getWidth(), 0.0f, ScopeEngine.getInstance().getEngineManager().getWindowManager().getHeight());
     }
 
     public void setFov(float fov) {

@@ -48,7 +48,6 @@ public class ScopeEngine {
     }
 
     public void cleanup() {
-        engineManager.setRunning(false);
         engineManager.cleanup();
         currentScene.cleanup();
     }

@@ -6,7 +6,6 @@ import org.scope.logger.Debug;
 import org.scope.scene.Scene;
 
 public class ScopeLauncher {
-
     public static void launch(Scene entryScene, String[] args, EnginePreferences preferences) {
         if (preferences.getPlatform() != Platform.WINDOWS) {
             Debug.resetScope();

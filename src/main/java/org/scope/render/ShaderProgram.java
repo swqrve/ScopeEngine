@@ -1,5 +1,6 @@
 package org.scope.render;
 
+import lombok.Getter;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
@@ -16,7 +17,7 @@ import static org.lwjgl.opengl.GL20.*;
 
 public class ShaderProgram {
 
-    public final int programID;
+    @Getter private final int programID;
 
     private final int vertexShaderID;
     private final int fragmentShaderID;
