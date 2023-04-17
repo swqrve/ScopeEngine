@@ -67,6 +67,8 @@ source = new SoundSource("song") // TODO: Make soundbuffer source files non abso
                 .setPosition(particleBasePosition);
 ```
 
+*Text Rendering Current Version*
+
 ```
         // Set the UI Camera! You can also just directly pass a camera to the render call for either the TextManager or text source!
         TextManager.getInstance().setCurrentCamera(camera); 
