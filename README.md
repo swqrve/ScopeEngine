@@ -8,7 +8,7 @@ It is being created with LWJGL.
 
 This project is mainly a framework and not a game engine so it doesn't really have many of the features that you'd expect from an engine. Furthermore, it is being made with a very specific style of game in mind. Specifically 2.5D games. It is meant for games like Wolfenstien 3D with a modern twist, which is why it currently doesn't have any form of model loader (Though a OBJ loader will be added soon). Think of games like *Delver* if you'd like to understand the intentions a bit more.
 
-It is in a fairly limited state. Currently it supports creating your own models when providing a list of vertices, basic lighting (Point lights, Spot lights, Directional Light), textures, shaders, cameras, skyboxs, particles, collision detection, raycasting, 3D audio, etc. This is still the very early state. As of right now, a solid understanding of opengl is necessary to make use of the framework, though this will likely remain the case for any game of even slightly substantial portion. Further below is a preview of just a couple of those mentioned features.
+It is in a fairly limited state. Currently it supports creating your own models when providing a list of vertices, basic lighting (Point lights, Spot lights, Directional Light), textures, shaders, cameras, skyboxs, particles, collision detection, raycasting, 3D audio, text rendering, etc. This is still the very early state. As of right now, a solid understanding of opengl is necessary to make use of the framework, though this will likely remain the case for any game of even slightly substantial portion. Further below is a preview of just a couple of those mentioned features.
 
 ## Usage
 
@@ -67,6 +67,17 @@ source = new SoundSource("song") // TODO: Make soundbuffer source files non abso
                 .setPosition(particleBasePosition);
 ```
 
+```
+        // Set the UI Camera! You can also just directly pass a camera to the render call for either the TextManager or text source!
+        TextManager.getInstance().setCurrentCamera(camera); 
+        
+        // The first argument is the name, similar to the ModelManager and lets you make render calls without a reference to the original text source.
+        textSource = new TextSource("arial", "fonts/arial.ttf", 0, 48);
+        
+        // This example uses a render call using the default UI Camera! (Shader, String to render, X, Y, Scale, RGB Values)
+        textSource.renderText(textShader, "FPS: " + ScopeEngine.getInstance().getEngineManager().getFps(), 0.0f, 600.0f - 25.0f, 0.5f, 0.0f, 0.0f, 0.0f);
+```
+
 ## Future Features:
 All the following or almost all the following are expected in the next month in order to be ready for Ludum Dare in time. They will get checkmarks as they get completed.
 
@@ -75,7 +86,7 @@ All the following or almost all the following are expected in the next month in 
 -AABB Collision Detection (Limited Version Implemented) ✔️
 -Raycasting (Version 1 Implemented) ✔️
 -3D Audio (Version 1 Implemented) ✔️
--Text Rendering ❌
+-Text Rendering (Limited Version Implemented, Costly!) ✔️
 ```
 
 There are plans for documentation in the future when it has more features to document..
