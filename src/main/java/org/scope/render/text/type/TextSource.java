@@ -9,7 +9,7 @@ import org.lwjgl.util.freetype.FT_Face;
 import org.scope.ScopeEngine;
 import org.scope.camera.Camera;
 import org.scope.logger.Debug;
-import org.scope.render.ShaderProgram;
+import org.scope.render.shader.ShaderProgram;
 import org.scope.render.text.TextManager;
 
 import java.nio.file.Paths;
@@ -116,7 +116,8 @@ public class TextSource {
         shader.bind();
 
         shader.setMatrix4f("projection", uiCamera.getCameraUIProjection());
-        glUniform3f(glGetUniformLocation(shader.getProgramID(), "textColor"), colorR, colorG, colorB);
+        shader.setBool("aIsText", true);
+        shader.setVec3("spriteColor", colorR, colorG, colorB);
 
         glActiveTexture(GL_TEXTURE0);
         glBindVertexArray(TextManager.getInstance().getTextModel().getVaoID());
@@ -160,4 +161,24 @@ public class TextSource {
         renderText(TextManager.getInstance().getCurrentCamera(), shader, text, x, y, scale, colorR, colorG, colorB);
     }
 
+
+    public float getTextWidth(String text, float scale) {
+        float textWidth = 0.0f;
+        for (int i = 0; i < text.length(); i++) {
+            GlyphCharacter glyph = characters.get(text.charAt(i));
+            textWidth += (glyph.getAdvance() >> 6) * scale;
+        }
+
+        return textWidth / 2.0f;
+    }
+
+    public float getLargestCharsHeight(String text, float scale) {
+        float textHeight = 0.0f;
+        for (int i = 0; i < text.length(); i++) {
+            GlyphCharacter glyph = characters.get(text.charAt(i));
+            if (glyph.getSize().y > textHeight) textHeight = glyph.getSize().y;
+        }
+
+        return textHeight * scale;
+    }
 }

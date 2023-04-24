@@ -56,6 +56,17 @@ public class AABB {
         return center;
     }
 
+    public void setCenter(Vector3f center, Vector3f dimensions) {
+        float halfScaleX = dimensions.x / 2.0f;
+        float halfScaleY = dimensions.y / 2.0f;
+        float halfScaleZ = dimensions.z / 2.0f;
+
+        bottomLeftCorner.set(center.x - halfScaleX, center.y - halfScaleY, center.z - halfScaleZ);
+        topRightCorner.set(center.x + halfScaleX, center.y + halfScaleY, center.z + halfScaleZ);
+
+        this.center.set(center);
+    }
+
     public AABB merge(AABB toMerge) {
         float bottomLeftX = Math.min(bottomLeftCorner.x, toMerge.getBottomLeftCorner().x);
         float bottomLeftY = Math.min(bottomLeftCorner.y, toMerge.getBottomLeftCorner().y);

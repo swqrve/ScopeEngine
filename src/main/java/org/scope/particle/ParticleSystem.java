@@ -11,9 +11,11 @@ import org.lwjgl.system.MemoryUtil;
 import org.scope.ScopeEngine;
 import org.scope.camera.Camera;
 import org.scope.logger.Debug;
-import org.scope.render.ModelManager;
-import org.scope.render.ShaderProgram;
-import org.scope.render.type.Quad;
+import org.scope.particle.setting.ParticleSetting;
+import org.scope.particle.type.Particle;
+import org.scope.render.model.ModelManager;
+import org.scope.render.shader.ShaderProgram;
+import org.scope.render.model.type.Quad;
 import org.scope.util.MathUtil;
 
 import java.nio.FloatBuffer;
@@ -43,7 +45,6 @@ public class ParticleSystem {
     private final FloatBuffer dataBuffer;
 
     private Matrix4f currentCameraMatrix;
-
 
     public ParticleSystem(ShaderProgram shader, ParticleSetting setting, int particlePoolSize) {
         this.particlePoolSize = particlePoolSize;
@@ -101,7 +102,6 @@ public class ParticleSystem {
             if (!particle.isActive()) continue;
 
             if (particleSettings.getMaterial().getTexture() == null) colors[index].set(particle.getFinalColor()).lerp(particle.getStartingColor(), particle.getLifePercentageLived());
-
 
             float sizeScale = 1.0f;
             if (particle.isShrinking()) sizeScale = (MathUtil.lerp(particle.getEndSize(), particle.getStartSize(), particle.getLifePercentageLived()));

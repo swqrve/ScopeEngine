@@ -8,10 +8,10 @@ import org.scope.ScopeEngine;
 import org.scope.camera.Camera;
 import org.scope.framework.Cleanable;
 import org.scope.logger.Debug;
-import org.scope.render.ModelManager;
-import org.scope.render.ShaderProgram;
+import org.scope.render.model.ModelManager;
+import org.scope.render.shader.ShaderProgram;
 import org.scope.render.text.type.TextSource;
-import org.scope.render.type.TextModel;
+import org.scope.render.model.type.TextModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,7 +32,9 @@ public class TextManager implements Cleanable {
 
     public TextManager() {
         instance = this;
+    }
 
+    public void init() {
         try (MemoryStack stack = MemoryStack.stackPush()) {
             PointerBuffer pLibraryPointer = stack.mallocPointer(1);
             int errorCode = FT_Init_FreeType(pLibraryPointer);

@@ -89,6 +89,7 @@ void main() {
     }
 
     if (material.hasTexture == 1) {
+        if (ambientC.a < 0.1) discard;
         fragColor = ambientC;
         return;
     }

@@ -16,15 +16,17 @@ public class FreeFlyCamera extends Camera {
     @Getter @Setter private float lastX;
     @Getter @Setter private float lastY;
 
-    @Getter @Setter private float sensitivity = 0.10f; // TODO: Add to constructor
+    @Getter @Setter private float sensitivity;
 
     @Getter private final Vector3f incrementVector = new Vector3f();
 
     private float xOffSet;
     private float yOffSet;
 
-    public FreeFlyCamera(float x, float y, float z, float fov) {
+    public FreeFlyCamera(float x, float y, float z, float fov, float sensitivity) {
         super(x, y, z, fov);
+
+        this.sensitivity = sensitivity;
 
         init();
     }

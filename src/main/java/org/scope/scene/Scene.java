@@ -8,7 +8,7 @@ public interface Scene extends Cleanable {
 
     void input(InputManager input);
 
-    void render();
+    void render(double deltaTime);
 
     void update(double deltaTime);
 }

@@ -54,6 +54,7 @@ public class ScopeEngine {
 
     public void setCurrentScene(Scene nextScene) {
         if (currentScene != null) currentScene.cleanup();
+        nextScene.init();
         this.currentScene = nextScene;
     }
 

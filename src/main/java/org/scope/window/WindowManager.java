@@ -7,6 +7,7 @@ import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL11C;
 import org.lwjgl.system.MemoryUtil;
 import org.scope.ScopeEngine;
 import org.scope.camera.Camera;
@@ -18,6 +19,7 @@ import java.nio.IntBuffer;
 import static java.sql.Types.NULL;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL13C.GL_MULTISAMPLE;
 
 public class WindowManager implements Cleanable {
 
@@ -92,6 +94,7 @@ public class WindowManager implements Cleanable {
 
         GL11.glEnable(GL11.GL_DEPTH_TEST);
         GL11.glEnable(GL11.GL_STENCIL_TEST);
+        GL11.glEnable(GL_MULTISAMPLE);
 
         // TODO: Enable face culling later after sorting out vertices in the standard models
 /*        GL11.glFrontFace(GL_CCW);
@@ -108,6 +111,7 @@ public class WindowManager implements Cleanable {
         GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MINOR, 3);
         GLFW.glfwWindowHint(GLFW.GLFW_OPENGL_PROFILE, GLFW.GLFW_OPENGL_CORE_PROFILE);
         GLFW.glfwWindowHint(GLFW.GLFW_OPENGL_FORWARD_COMPAT, GL11.GL_TRUE);
+        GLFW.glfwWindowHint(GLFW_SAMPLES, 4); // MSAA
     }
 
     public void setTitle(String title) {

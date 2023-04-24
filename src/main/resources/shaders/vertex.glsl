@@ -14,17 +14,32 @@ uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
 
-// Particle Info
 uniform int isAParticle;
+
+uniform int instanced;
+
+uniform float atlasWidthSize;
+uniform float totalAtlasDimension;
 
 struct Particle {
     mat4 model;
     vec4 color;
 };
 
+struct InstancedObject {
+    mat4 model;
+    float textureID;
+};
+
+
 layout (std430, binding = 0) buffer ParticleSSBO {
     Particle particles[];
 };
+
+layout (std430, binding = 1) buffer InstancedSSBO {
+    InstancedObject instancedObjects[];
+};
+
 
 void main() {
     isParticle = isAParticle;
@@ -38,6 +53,26 @@ void main() {
         fragPos = worldPos.xyz;
 
         texCoords = aTexCoords;
+
+        return;
+    }
+
+    if (instanced == 1) {
+        vec4 worldPos = instancedObjects[gl_InstanceID].model * vec4(aPos, 1.0);
+        gl_Position = projection * view * worldPos;
+
+        normal = normalize(worldPos).xyz;
+        fragPos = worldPos.xyz;
+
+        float tileWidthNormalized = atlasWidthSize / totalAtlasDimension;
+
+        float leftTextureCoord = instancedObjects[gl_InstanceID].textureID * tileWidthNormalized;
+        float rightTextureCoord = leftTextureCoord + tileWidthNormalized;
+        texCoords = aTexCoords + vec2(leftTextureCoord, 0.0);
+        texCoords.x = clamp(texCoords.x, leftTextureCoord, rightTextureCoord);
+
+        //  texCoords = vec2(aTexCoords.x * instancedObjects[gl_InstanceID].textureID, aTexCoords.y);
+        // texCoords = aTexCoords;
 
         return;
     }

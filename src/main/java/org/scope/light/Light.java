@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.joml.Vector3f;
 import org.scope.framework.UniformConstructor;
-import org.scope.render.ShaderProgram;
+import org.scope.render.shader.ShaderProgram;
 
 public abstract class Light implements UniformConstructor {
     @Getter @Setter private Vector3f color;

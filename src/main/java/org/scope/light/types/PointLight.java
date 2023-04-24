@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.joml.Vector3f;
 import org.scope.light.Light;
-import org.scope.render.ShaderProgram;
+import org.scope.render.shader.ShaderProgram;
 
 public class PointLight extends Light {
     @Getter @Setter private float constant;

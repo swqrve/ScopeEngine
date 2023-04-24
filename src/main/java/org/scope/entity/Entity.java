@@ -4,7 +4,7 @@ import lombok.Getter;
 import org.joml.Vector3f;
 
 public class Entity {
-    @Getter private Vector3f position;
+    @Getter private Vector3f position = new Vector3f();
 
     public void setPosition(float x, float y, float z) {
         this.position.x = x;
@@ -28,15 +28,15 @@ public class Entity {
         this.position.z = z;
     }
 
-    public double getX() {
+    public float getX() {
         return this.position.x;
     }
 
-    public double getY() {
+    public float getY() {
         return this.position.y;
     }
 
-    public double getZ() {
+    public float getZ() {
         return this.position.z;
     }
 }

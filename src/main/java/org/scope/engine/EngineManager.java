@@ -1,6 +1,7 @@
 package org.scope.engine;
 
 import lombok.Getter;
+import lombok.Setter;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.opengl.GL11;
@@ -8,23 +9,27 @@ import org.scope.ScopeEngine;
 import org.scope.camera.Camera;
 import org.scope.input.InputManager;
 import org.scope.logger.Debug;
-import org.scope.render.Texture;
+import org.scope.render.model.struct.Texture;
+import org.scope.render.shader.ShaderProgram;
 import org.scope.render.text.TextManager;
+import org.scope.render.text.type.TextSource;
 import org.scope.sound.SoundManager;
+import org.scope.sound.type.SoundBuffer;
+import org.scope.sound.type.SoundSource;
 import org.scope.util.ConstManager;
 import org.scope.util.EnginePreferences;
+import org.scope.util.FileUtil;
 import org.scope.window.WindowManager;
-
-import static org.lwjgl.opengl.GL30C.glBindVertexArray;
-import static org.lwjgl.opengl.GL30C.glGenVertexArrays;
 
 public class EngineManager {
 
     @Getter private WindowManager windowManager;
     @Getter private InputManager inputManager;
     @Getter private SoundManager soundManager;
+    @Getter private TextManager textManager;
 
-    @Getter private boolean running;
+
+    @Getter @Setter private boolean running;
 
     @Getter private int fps;
     private final float frameTime;
@@ -53,10 +58,10 @@ public class EngineManager {
         soundManager = new SoundManager();
         soundManager.init(null); // TODO: Grab default sound device options from preferences
 
-        new TextManager();
+        textManager = new TextManager();
+        textManager.init();
 
-        // Initialize our "null" texture or "error" texture
-        Texture.setErrorTexture(new Texture("textures/error.png"));
+        initDefaultAssets();
 
         ScopeEngine.getInstance().getCurrentScene().init();
 
@@ -94,6 +99,8 @@ public class EngineManager {
             double deltaTime = passedTime / nano;
 
             while (unprocessedTime > frameTime) {
+                if (!running) break;
+
                 render = true;
                 unprocessedTime -= frameTime;
 
@@ -108,18 +115,14 @@ public class EngineManager {
             }
 
             if (render) {
+                if (!running) break;
+
                 input(deltaTime);
                 update(deltaTime);
-                render();
+                render(deltaTime);
                 frames++;
             }
         }
-
-        cleanup();
-    }
-
-    public void setRunning(boolean running) {
-        this.running = running;
     }
 
     private void input(double delta) {
@@ -128,18 +131,36 @@ public class EngineManager {
         if (Camera.getCurrentCamera() != null) Camera.getCurrentCamera().input(inputManager, delta);
     }
 
-    private void render() {
+    private void render(double delta) {
+        if (!running) return;
+
         GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
 
-        ScopeEngine.getInstance().getCurrentScene().render();
+        ScopeEngine.getInstance().getCurrentScene().render(delta);
 
-        // Handle buffer and poll events
         GLFW.glfwSwapBuffers(windowManager.getWindowID());
         GLFW.glfwPollEvents();
     }
 
     private void update(double deltaTime) {
         ScopeEngine.getInstance().getCurrentScene().update(deltaTime);
+    }
+
+    private void initDefaultAssets() {
+        Texture.setErrorTexture(new Texture("textures/error.png"));
+
+        new TextSource("default", "fonts/arial.ttf", 0, 48);
+
+        new SoundSource("creak")
+                .setBuffer(new SoundBuffer("sounds/creak.ogg").getBufferID())
+                .setGain(0.10f)
+                .setLoops(false)
+                .setIsRelative(false)
+                .setPosition(0.0f, 0.0f, 0.0f);
+
+        new ShaderProgram("default", FileUtil.loadResource("shaders/vertex.glsl"), FileUtil.loadResource("shaders/fragment.glsl"));
+        new ShaderProgram("skyboxD", FileUtil.loadResource("shaders/skybox/skyboxvertex.glsl"), FileUtil.loadResource("shaders/skybox/skyboxfragment.glsl"));
+        new ShaderProgram("uiD", FileUtil.loadResource("shaders/ui/textvertex.glsl"), FileUtil.loadResource("shaders/ui/textfragment.glsl"));
     }
 
     public void cleanup() {

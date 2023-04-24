@@ -7,7 +7,7 @@ import org.scope.light.types.DirectionalLight;
 import org.scope.light.types.PointLight;
 import org.scope.light.types.SpotLight;
 import org.scope.logger.Debug;
-import org.scope.render.ShaderProgram;
+import org.scope.render.shader.ShaderProgram;
 import org.scope.util.ConstManager;
 
 public class LightManager {

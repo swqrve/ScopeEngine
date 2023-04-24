@@ -16,6 +16,7 @@ public abstract class Camera {
     @Getter private final Vector3f cameraPosition;
 
     @Getter private final Matrix4f cameraProjection;
+    @Getter private final Matrix4f cameraSpriteProjection;
     @Getter private final Matrix4f cameraUIProjection;
 
     @Getter private Vector3f cameraFront = new Vector3f(0.0f, 0.0f, -1.0f);
@@ -33,6 +34,7 @@ public abstract class Camera {
         this.cameraPosition = cameraPosition;
         this.fov = fov;
         cameraProjection = new Matrix4f().identity().perspective(Math.toRadians(fov), (float) ScopeEngine.getInstance().getEngineManager().getWindowManager().getWidth() / (float) ScopeEngine.getInstance().getEngineManager().getWindowManager().getHeight(), (Float) ConstManager.getConstant("zNear"), (Float) ConstManager.getConstant("zFar"));
+        cameraSpriteProjection = new Matrix4f().ortho(0.0f, ScopeEngine.getInstance().getEngineManager().getWindowManager().getWidth(), ScopeEngine.getInstance().getEngineManager().getWindowManager().getHeight(), 0.0f, -1.0f, 1.0f);
         cameraUIProjection = new Matrix4f().ortho2D(0.0f, ScopeEngine.getInstance().getEngineManager().getWindowManager().getWidth(), 0.0f, ScopeEngine.getInstance().getEngineManager().getWindowManager().getHeight());
     }
 
@@ -44,10 +46,12 @@ public abstract class Camera {
 
     public void updateCameraProjection() {
         cameraProjection.identity().perspective(Math.toRadians(fov), (float) ScopeEngine.getInstance().getEngineManager().getWindowManager().getWidth() / (float) ScopeEngine.getInstance().getEngineManager().getWindowManager().getHeight(), (Float) ConstManager.getConstant("zNear"), (Float) ConstManager.getConstant("zFar"));
+        cameraSpriteProjection.identity().ortho(0.0f, ScopeEngine.getInstance().getEngineManager().getWindowManager().getWidth(), ScopeEngine.getInstance().getEngineManager().getWindowManager().getHeight(), 0.0f, -1.0f, 1.0f);
         cameraUIProjection.identity().ortho2D(0.0f, ScopeEngine.getInstance().getEngineManager().getWindowManager().getWidth(), 0.0f, ScopeEngine.getInstance().getEngineManager().getWindowManager().getHeight());
     }
 
     public void setFov(float fov) {
+        if (this.fov == fov) return;
         this.fov = fov;
         updateCameraProjection();
     }
