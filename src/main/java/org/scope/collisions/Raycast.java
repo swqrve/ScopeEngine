@@ -28,7 +28,7 @@ public class Raycast {
         return inverseDirection;
     }
 
-    public boolean intersectsABB(AABB aabb) {
+    public boolean intersects(AABB aabb) {
         return intersectionCheck(this.origin, getInverseDirection(), aabb);
     }
 

@@ -54,9 +54,12 @@ public class GameManager {
         if (input.isKeyPressed(GLFW.GLFW_KEY_ESCAPE)) ScopeEngine.getInstance().end();
         if (input.isKeyPressed(GLFW.GLFW_KEY_C)) camera.setFov(30.0f); else camera.setFov(60.0f);
 
-        if (input.isMousePressed(GLFW.GLFW_MOUSE_BUTTON_2)) for (Tile t : LevelManager.getInstance().getLevel().getMap().getMapTiles()) if (Raycast.intersectsAABB(camera.getCameraPosition(), camera.getDirection(), t.getCollider())) {
-            t.onRightClick();
-            break;
+        if (input.isMousePressed(GLFW.GLFW_MOUSE_BUTTON_2)) {
+            Raycast cast = new Raycast(camera.getCameraPosition(), camera.getDirection());
+            for (Tile t : LevelManager.getInstance().getLevel().getMap().getMapTiles()) if (cast.intersects(t.getCollider()) && t.getType() == Tile.TileType.PLACEABLE) {
+                t.onRightClick();
+                break;
+            }
         }
 
     }

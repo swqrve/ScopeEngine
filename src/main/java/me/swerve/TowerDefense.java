@@ -9,7 +9,7 @@ import org.scope.util.ScopeLauncher;
 public class TowerDefense {
 
     public static void main(String[] args) {
-        EnginePreferences preferences = new EnginePreferences(Platform.WINDOWS, 1280, 720, false, "Tower Defense!", false, "Engine", true, 5, 5);
+        EnginePreferences preferences = new EnginePreferences(Platform.WINDOWS, 1280, 720, false, "Tower Defense!", true, "Engine", true, 5, 5);
         ScopeLauncher.launch(new MenuScreen(), args, preferences);
 
         System.out.println("------------------------------------------------------------------------------");
