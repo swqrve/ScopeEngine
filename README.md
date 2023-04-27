@@ -1,6 +1,6 @@
 # ScopeEngine
 
-Hey! This is my personal game "engine. Currently, it is more of a lightweight game framework that is in active development. Trying to get back into game development and I want to have a framework that I'm comfortable using whenever I'm starting new projects.
+Hey! This is my personal game "engine". Currently, it is more of a lightweight game framework that is in active development. Trying to get back into game development and I want to have a framework that I'm comfortable using whenever I'm starting new projects.
 
 ### Basic Project info and why it exists:
 
@@ -52,7 +52,7 @@ If you'd like to check out how to use it check out the example game package. Som
 
 *3D Audio Current Version*
 ```
-source = new SoundSource("song") // TODO: Make soundbuffer source files non absolute file paths
+source = new SoundSource("song")
                 .setBuffer(new SoundBuffer("sounds/comedy-Tricker.ogg").getBufferID())
                 .setGain(0.10f)
                 .setLoops(true)
