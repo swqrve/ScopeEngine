@@ -15,6 +15,7 @@ import org.scope.render.model.struct.Texture;
 import org.scope.render.shader.ShaderProgram;
 import org.scope.render.model.struct.Model;
 import org.scope.util.BufferUtil;
+import org.scope.util.FileUtil;
 
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
@@ -46,6 +47,7 @@ import static org.lwjgl.opengl.GL13C.GL_TEXTURE_CUBE_MAP;
 import static org.lwjgl.opengl.GL15C.glDeleteBuffers;
 import static org.lwjgl.opengl.GL30C.glDeleteVertexArrays;
 import static org.lwjgl.stb.STBImage.stbi_load;
+import static org.lwjgl.stb.STBImage.stbi_load_from_memory;
 
 public class SkyBox extends Model {
     private final String[] faces = { "right", "left", "top", "bottom", "front", "back" };
@@ -151,6 +153,8 @@ public class SkyBox extends Model {
     }
 
     private void loadCubeMap(String directory) { // TODO: Should have texture class handle all the skybox texture loading for cube maps (cause it can be used for other stuff too I think) but for now this implementation is fine
+        if (directory.charAt(0) != '/') directory = "/" + directory;
+
         textureID = glGenTextures();
         glBindTexture(GL_TEXTURE_CUBE_MAP, textureID);
 
@@ -162,8 +166,8 @@ public class SkyBox extends Model {
             String fileLocation = directory + "/" + faces[i] + ".png";
             STBImage.stbi_set_flip_vertically_on_load(false);
 
-            ByteBuffer data = null;
-            if (Texture.class.getClassLoader().getResource(fileLocation) != null) data = stbi_load(Texture.class.getClassLoader().getResource(fileLocation).getPath().substring(1), width, height, nrChannels, 0);
+            ByteBuffer data = FileUtil.fileDirToBuffer(fileLocation);
+            if (Texture.class.getResourceAsStream(fileLocation) != null) data = stbi_load_from_memory(data, width, height, nrChannels, 0);
 
             if (data == null) {
                 Debug.log(Debug.LogLevel.FATAL, "Failed to load texture " + fileLocation + ". There is no fall back skybox! Crashing!", true);

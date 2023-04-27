@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<launch4jConfig>
+  <dontWrapJar>false</dontWrapJar>
+  <headerType>gui</headerType>
+  <jar>D:\GameEngine\ScopeEngine\target\ScopeEngine-1.0-SNAPSHOT.jar</jar>
+  <outfile>D:\GameEngine\ScopeEngine\target\ScopeEngine.exe</outfile>
+  <errTitle>You have the wrong java version downloaded...</errTitle>
+  <cmdLine></cmdLine>
+  <chdir>.</chdir>
+  <priority>normal</priority>
+  <downloadUrl></downloadUrl>
+  <supportUrl></supportUrl>
+  <stayAlive>false</stayAlive>
+  <restartOnCrash>false</restartOnCrash>
+  <manifest></manifest>
+  <icon>D:\GameEngine\ScopeEngine\ScopeEngineIcon.ico</icon>
+  <jre>
+    <path>C:\Program Files\Java\jdk1.8.0_291</path>
+    <requiresJdk>false</requiresJdk>
+    <requires64Bit>false</requires64Bit>
+    <minVersion>1.8.0_291</minVersion>
+    <maxVersion></maxVersion>
+  </jre>
+</launch4jConfig>

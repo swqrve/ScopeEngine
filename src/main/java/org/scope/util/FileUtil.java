@@ -2,10 +2,16 @@ package org.scope.util;
 
 import lombok.SneakyThrows;
 import org.bson.Document;
+import org.lwjgl.BufferUtils;
 import org.scope.logger.Debug;
+import org.scope.render.model.struct.Texture;
 
 import java.io.*;
+import java.nio.Buffer;
+import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -48,6 +54,25 @@ public class FileUtil {
         }
 
         return Document.parse(loadResource(directory));
+    }
+
+    @SneakyThrows
+    public static ByteBuffer fileDirToBuffer(String fileName) {
+        InputStream in = FileUtil.class.getResourceAsStream(fileName);
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+
+        byte[] fileBytes = new byte[1024];
+
+        int length;
+        while ((length = in.read(fileBytes)) != -1) out.write(fileBytes, 0, length);
+
+        byte[] fileData = out.toByteArray();
+
+        ByteBuffer buffer = BufferUtils.createByteBuffer(fileData.length);
+        buffer.put(fileData);
+        ((Buffer) buffer).flip();
+
+        return buffer;
     }
 
     @SneakyThrows

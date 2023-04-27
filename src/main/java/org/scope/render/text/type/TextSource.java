@@ -11,6 +11,7 @@ import org.scope.camera.Camera;
 import org.scope.logger.Debug;
 import org.scope.render.shader.ShaderProgram;
 import org.scope.render.text.TextManager;
+import org.scope.util.FileUtil;
 
 import java.nio.file.Paths;
 import java.util.HashMap;
@@ -33,9 +34,9 @@ public class TextSource {
     private final Map<Character, GlyphCharacter> characters = new HashMap<>();
 
     @SneakyThrows
-    public TextSource(String name, String directory, int pixelWidth, int pixelHeight) {
+    public TextSource(String name, String fileName, int pixelWidth, int pixelHeight) {
         this.name = name;
-        if (directory.charAt(0) != '/') directory = "/" + directory;
+        if (fileName.charAt(0) != '/') fileName = "/" + fileName;
 
         if (TextManager.getInstance() == null || TextManager.getInstance().getLibraryPointer() == 0) {
             Debug.log(Debug.LogLevel.ERROR, "A font is attempting to be created before the TextManager has been instantiated, or there was an error creating the library pointer!");
@@ -45,8 +46,8 @@ public class TextSource {
         long facePointer;
         try (MemoryStack stack = MemoryStack.stackPush()) {
             PointerBuffer pFacePointer = stack.mallocPointer(1);
-            int errorCode = FT_New_Face(TextManager.getInstance().getLibraryPointer(), Paths.get(TextSource.class.getResource(directory).toURI()).toFile().getAbsolutePath().replaceAll("/", "\\"), 0, pFacePointer);
 
+            int errorCode = FT_New_Memory_Face(TextManager.getInstance().getLibraryPointer(), FileUtil.fileDirToBuffer(fileName), 0, pFacePointer);
             if (errorCode != 0) {
                 Debug.log(Debug.LogLevel.FATAL, "Error #"  + errorCode + " creating FreeType font of name " + name + ".", true);
                 ScopeEngine.getInstance().end();

@@ -17,6 +17,7 @@ import org.scope.logger.Debug;
 import org.scope.sound.type.SoundBuffer;
 import org.scope.sound.type.SoundListener;
 import org.scope.sound.type.SoundSource;
+import org.scope.util.FileUtil;
 
 import java.nio.Buffer;
 import java.nio.IntBuffer;
@@ -132,7 +133,7 @@ public class SoundManager implements Cleanable {
 
         try (MemoryStack stack = MemoryStack.stackPush()) {
             IntBuffer error = stack.mallocInt(1);
-            long decoder = stb_vorbis_open_filename(Paths.get(SoundManager.class.getResource(filePath).toURI()).toFile().getAbsolutePath().replaceAll("/", "\\"), error, null);
+            long decoder = stb_vorbis_open_memory(FileUtil.fileDirToBuffer(filePath), error, null);
             if (decoder == NULL) {
                 Debug.log(Debug.LogLevel.ERROR, "Failed to open Ogg Vorbis file. Error: " + error.get(0));
                 ScopeEngine.getInstance().end();

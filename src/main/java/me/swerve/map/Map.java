@@ -13,6 +13,7 @@ import org.scope.render.model.struct.Model;
 import org.scope.render.shader.ShaderProgram;
 import org.scope.util.FileUtil;
 
+import java.nio.Buffer;
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -78,15 +79,15 @@ public class Map {
             index++;
         }
 
-        dataBuffer.position(0);
+        ((Buffer) dataBuffer).position(0);
 
         for (int i = 0; i < index; i++) {
             matrices[i].get(dataBuffer);
             dataBuffer.put((dataBuffer.position() + 16), atlasIndex[i]);
-            dataBuffer.position(dataBuffer.position() + 20);
+            ((Buffer) dataBuffer).position(dataBuffer.position() + 20);
         }
 
-        dataBuffer.rewind();
+        ((Buffer) dataBuffer).rewind();
 
         glBindBuffer(GL_SHADER_STORAGE_BUFFER, ssbo);
         glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, ssbo);

@@ -2,31 +2,35 @@ package org.scope.render.model.struct;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.SneakyThrows;
+import org.lwjgl.BufferUtils;
 import org.lwjgl.stb.STBImage;
 import org.lwjgl.system.MemoryUtil;
 import org.scope.logger.Debug;
 import org.scope.util.BufferUtil;
+import org.scope.util.FileUtil;
 
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 
 import static org.lwjgl.opengl.EXTTextureFilterAnisotropic.GL_TEXTURE_MAX_ANISOTROPY_EXT;
-import static org.lwjgl.opengl.GL11.GL_LINEAR_ATTENUATION;
 import static org.lwjgl.opengl.GL11C.*;
 import static org.lwjgl.opengl.GL12.GL_CLAMP_TO_EDGE;
 import static org.lwjgl.opengl.GL12.GL_TEXTURE_MAX_LEVEL;
 import static org.lwjgl.opengl.GL13.glActiveTexture;
-import static org.lwjgl.opengl.GL14.GL_MIRRORED_REPEAT;
 import static org.lwjgl.opengl.GL30C.glGenerateMipmap;
-import static org.lwjgl.stb.STBImage.stbi_load;
+import static org.lwjgl.stb.STBImage.stbi_load_from_memory;
 
 public class Texture {
 
     @Getter @Setter private static Texture errorTexture;
     @Getter private final int textureID;
 
+    @SneakyThrows
     public Texture(String fileName) {
-        if (fileName.charAt(0) == '/' || fileName.charAt(0) == '\\') fileName = fileName.substring(1);
+        if (fileName.charAt(0) != '/') fileName = "/" + fileName;
 
         IntBuffer width = MemoryUtil.memAllocInt(1);
         IntBuffer height = MemoryUtil.memAllocInt(1);
@@ -34,8 +38,8 @@ public class Texture {
 
         STBImage.stbi_set_flip_vertically_on_load(true); // TODO: Add this to the constructor if necessary
 
-        ByteBuffer data = null;
-        if (Texture.class.getClassLoader().getResource(fileName) != null) data = stbi_load(Texture.class.getClassLoader().getResource(fileName).getPath().replaceAll("file:", "").replaceAll("!", "").substring(1), width, height, nrChannels, 0);
+        ByteBuffer data = FileUtil.fileDirToBuffer(fileName);
+        if (Texture.class.getResourceAsStream(fileName) != null) data = stbi_load_from_memory(data, width, height, nrChannels, 0);
 
         if (data == null) {
             Debug.log(Debug.LogLevel.ERROR, "Failed to load texture " + fileName + "... Will return a miscellaneous texture instead.", true);

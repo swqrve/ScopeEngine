@@ -14,7 +14,7 @@ public class ModelManager {
         modelName = modelName.toLowerCase();
         Model model = models.get(modelName);
 
-        if (model == null) Debug.log(Debug.LogLevel.ERROR, "Could not find the requested model of name: " +  modelName + ". Returning null.");
+        if (model == null) Debug.log(Debug.LogLevel.WARN, "Could not find the requested model of name: " +  modelName + ". Returning null.");
         return model;
     }
 
