@@ -8,11 +8,7 @@ It is being created with LWJGL.
 
 This project is mainly a framework and not a game engine so it doesn't really have many of the features that you'd expect from an engine. Furthermore, it is being made with a very specific style of game in mind. Specifically 2.5D games. It is meant for games like Wolfenstien 3D with a modern twist, which is why it currently doesn't have any form of model loader (Though a OBJ loader will be added soon). Think of games like *Delver* if you'd like to understand the intentions a bit more.
 
-It is in a usable, but very limited state. Currently it supports creating your own models when providing a list of vertices, basic lighting (Point lights, Spot lights, Directional Light), textures, shaders, cameras, skyboxs, particles, collision detection, raycasting, 3D audio, text rendering, etc. This is still the very early state. As of right now, a solid understanding of opengl is necessary to make use of the framework, though this will likely remain the case for any game of even slightly substantial portion. Further below is a preview of just a couple of those mentioned features.
-
-## Usage
-
-If you'd like to check out how to use it check out the example game package. Some fully implemented features are removed while other new/minimally tested features are present! Think of it as a game jam game, it was only made in a couple hours! Further below is some more info over the example game + images.
+It is usable, but very limited. Though (as of 4/30/23) it now has all the features I've wanted to implement before starting on a project I have in mind.
 
 ## Preview
 ![image](https://user-images.githubusercontent.com/59324927/229053567-c51ba313-8e9b-48d5-82eb-7fabb9ee83b3.png)
@@ -82,14 +78,14 @@ source = new SoundSource("song")
 
 ## Example Game!
 
-This is a pretty rough example game, but I just wanted to have something running in the engine to prove that it is in a usable state before LD. The code is not an example of how to make a good game whatsoever, and is quite a mess. However, it is understandable and can be used to understand how the engine works. Last warning though, don't use the code in an actual game haha.
+This is a pretty rough example game made in around 5 hours. The code is not an example of how to make a good game whatsoever, and is quite a mess. However, it is understandable and can be used to understand how the engine works. Last warning though, don't use the code in an actual game haha.
 
 ![image](https://user-images.githubusercontent.com/59324927/233926252-8084621f-d772-4b5d-a0f0-68705c88784d.png)
 ![image](https://user-images.githubusercontent.com/59324927/233926648-0db3ed77-d6f7-4d3a-8064-9bece8826e27.png)
 
 
-## Future Features:
-All the following or almost all the following are expected in the next month in order to be ready for Ludum Dare in time. They will get checkmarks as they get completed.
+## Included Large Features:
+These are all the large or more notable features, simpler features like rendering, window management, debug logging, etc. are not included in this list.
 
 ```
 -Particle System (Version 1 Implemented) ✔️
@@ -97,6 +93,8 @@ All the following or almost all the following are expected in the next month in 
 -Raycasting (Version 1 Implemented) ✔️
 -3D Audio (Version 1 Implemented) ✔️
 -Text Rendering (Limited Version Implemented, Costly!) ✔️
+-2D Animation (Version 1 Implemented) ✔️
 ```
 
-There are plans for documentation in the future when it has more features to document..
+There are no current plans for documentation, since I never really planned on having other users make use of the engine and I've tried to ensure the code is more then readable enough to be interpreted without it. 
+If someone were to PR documentation, it would be appreciated.
