@@ -18,6 +18,9 @@ uniform int isAParticle;
 
 uniform int instanced;
 
+uniform int isAnimated;
+uniform int currentFrame;
+
 uniform float atlasWidthSize;
 uniform float totalAtlasDimension;
 
@@ -71,8 +74,22 @@ void main() {
         texCoords = aTexCoords + vec2(leftTextureCoord, 0.0);
         texCoords.x = clamp(texCoords.x, leftTextureCoord, rightTextureCoord);
 
-        //  texCoords = vec2(aTexCoords.x * instancedObjects[gl_InstanceID].textureID, aTexCoords.y);
-        // texCoords = aTexCoords;
+        return;
+    }
+
+    if (isAnimated == 1) {
+        vec4 worldPos = model * vec4(aPos, 1.0);
+        gl_Position = projection * view * worldPos;
+
+        normal = normalize(worldPos).xyz;
+        fragPos = worldPos.xyz;
+
+        float tileWidthNormalized = atlasWidthSize / totalAtlasDimension;
+
+        float leftTextureCoord = currentFrame * tileWidthNormalized;
+        float rightTextureCoord = leftTextureCoord + tileWidthNormalized;
+        texCoords = aTexCoords + vec2(leftTextureCoord, 0.0);
+        texCoords.x = clamp(texCoords.x, leftTextureCoord, rightTextureCoord);
 
         return;
     }

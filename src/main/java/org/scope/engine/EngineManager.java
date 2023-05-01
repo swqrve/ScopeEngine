@@ -160,7 +160,7 @@ public class EngineManager {
 
         new ShaderProgram("default", FileUtil.loadResource("shaders/vertex.glsl"), FileUtil.loadResource("shaders/fragment.glsl"));
         new ShaderProgram("skyboxD", FileUtil.loadResource("shaders/skybox/skyboxvertex.glsl"), FileUtil.loadResource("shaders/skybox/skyboxfragment.glsl"));
-        new ShaderProgram("uiD", FileUtil.loadResource("shaders/ui/textvertex.glsl"), FileUtil.loadResource("shaders/ui/textfragment.glsl"));
+        new ShaderProgram("uiD", FileUtil.loadResource("shaders/ui/uivertex.glsl"), FileUtil.loadResource("shaders/ui/uifragment.glsl"));
     }
 
     public void cleanup() {

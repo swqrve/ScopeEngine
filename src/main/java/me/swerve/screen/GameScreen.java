@@ -2,13 +2,8 @@ package me.swerve.screen;
 
 import me.swerve.camera.FPSCamera;
 import me.swerve.game.GameManager;
-import me.swerve.tile.Tile;
 import me.swerve.ui.UIManager;
-import org.joml.Matrix4f;
-import org.lwjgl.glfw.GLFW;
-import org.scope.ScopeEngine;
 import org.scope.camera.Camera;
-import org.scope.collisions.Raycast;
 import org.scope.input.InputManager;
 import org.scope.render.model.type.SkyBox;
 import org.scope.render.shader.ShaderManager;

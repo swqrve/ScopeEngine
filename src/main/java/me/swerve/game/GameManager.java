@@ -3,10 +3,8 @@ package me.swerve.game;
 import lombok.Getter;
 import lombok.Setter;
 import me.swerve.entity.enemy.Enemy;
-import me.swerve.entity.enemy.type.Walker;
 import me.swerve.entity.projectile.Projectile;
 import me.swerve.entity.tower.Tower;
-import me.swerve.entity.tower.types.BaseTower;
 import me.swerve.level.LevelManager;
 import me.swerve.map.Map;
 import me.swerve.tile.Tile;
@@ -69,6 +67,7 @@ public class GameManager {
         shader.setMatrix4f("projection", camera.getCameraProjection());
 
         shader.setBool("isAParticle", false);
+        shader.setBool("isAnimated", false);
         shader.setBool("usesLighting", false);
 
         LevelManager.getInstance().getLevel().render(shader, camera, matrix);
