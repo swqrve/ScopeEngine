@@ -45,7 +45,6 @@
             <manifest>
               <addClasspath>true</addClasspath>
               <classpathPrefix>lib/</classpathPrefix>
-              <mainClass>me.swerve.TowerDefense</mainClass>
             </manifest>
           </archive>
         </configuration>
