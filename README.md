@@ -78,7 +78,7 @@ source = new SoundSource("song")
 
 ## Example Game!
 
-This is a pretty rough example game made in around 5 hours. The code is not an example of how to make a good game whatsoever, and is quite a mess. However, it is understandable and can be used to understand how the engine works. Last warning though, don't use the code in an actual game haha.
+This is a pretty rough example game made in around 5 hours. The code is not an example of how to make a good game whatsoever, and is quite a mess. However, it is understandable and can be used to understand how the engine works. Last warning though, don't use the code in an actual game haha. The source code can be found here: https://github.com/swqrve/ScopeExampleGame
 
 ![image](https://user-images.githubusercontent.com/59324927/233926252-8084621f-d772-4b5d-a0f0-68705c88784d.png)
 ![image](https://user-images.githubusercontent.com/59324927/233926648-0db3ed77-d6f7-4d3a-8064-9bece8826e27.png)
