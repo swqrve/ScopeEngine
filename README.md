@@ -1,6 +1,6 @@
 # ScopeEngine
 
-Hey! This is my personal game "engine". Currently, it is more of a lightweight game framework that is in active development. Trying to get back into game development and I want to have a framework that I'm comfortable using whenever I'm starting new projects.
+Hey! This is my personal game "engine". Currently, it is more of a lightweight game framework that is in development. Trying to get back into game development and I want to have a framework that I'm comfortable using whenever I'm starting new projects.
 
 ### Basic Project info and why it exists:
 
@@ -96,5 +96,5 @@ These are all the large or more notable features, simpler features like renderin
 -2D Animation (Version 1 Implemented) ✔️
 ```
 
-There are no current plans for documentation, since I never really planned on having other users make use of the engine and I've tried to ensure the code is more then readable enough to be interpreted without it. 
+There are no current plans for documentation since I never really planned on having other users make use of the engine and I've tried to ensure the code is more than readable enough to be interpreted without it. 
 If someone were to PR documentation, it would be appreciated.
